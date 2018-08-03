@@ -1,0 +1,5 @@
+Kcov is a code-coverage collection tool for UNIX systems. It enables
+single-step collection and reporting and relies on debug information
+for instrumentation of unmodified binaries. This presentation will
+demonstrate the use of kcov, explain its design principles and discuss
+some quirks in the implementation.
