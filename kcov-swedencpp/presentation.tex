@@ -1,50 +1,88 @@
-Kcov - a single-step code coverage tool
+\documentclass{beamer}
 
-- Motivation
+\usepackage[utf8]{inputenc}
+\usetheme{Madrid}
+\graphicspath{ {./images/}{../images/} }
 
-  - What is code coverage?
+\title[Kcov - a single-step code coverage tool] %optional
+{Kcov - a single-step code coverage tool}
 
-  - goto fail
+%\subtitle{A short story}
 
-- Outline of the presentation
+\author{Simon Kågström}
 
+\institute
+{
+  Net Insight\\
+}
 
-- Setting: UNIX
+%\logo{\includegraphics[height=1.5cm]{lion-logo.png}}
 
+\begin{document}
 
-- Problems with gcov + lcov etc
+\frame{\titlepage}
 
-  - Multiple steps
-
-  - Loses data on program crash
-
-
-- Basic demo of kcov
-
-  - Explain how the output looks, 1/2 etc
-
-- History
-
-  - Bcov by Thomas Neumann
-
-  - Kernel kcov - not related
-
-- Some features
-
-  - What I use if for
-
-  - Demo with filtering, merging etc
+\begin{frame}
+  \frametitle{Motivation}
+  \includegraphics<1>[height=8cm]{goto_fail_no_coverage}
+  \includegraphics<2>[height=8cm]{goto_fail}
+\end{frame}
 
 
-- How kcov works
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
 
-  - A bit about how gcov works
+\end{document}
 
-  - Breakpoints
+%Kcov - a single-step code coverage tool
 
-  - Differences between OSX and Linux/FreeBSD
+%- Motivation
 
-  - Complain a bit about elf_version/libdwarf etc.
+%  - What is code coverage?
+
+%  - goto fail
+
+% - Outline of the presentation
 
 
-- What about speed?
+% - Setting: UNIX
+
+
+% - Problems with gcov + lcov etc
+
+%  - Multiple steps
+
+%  - Loses data on program crash
+
+
+%- Basic demo of kcov
+
+%  - Explain how the output looks, 1/2 etc
+
+%- History
+
+%  - Bcov by Thomas Neumann
+
+%  - Kernel kcov - not related
+
+%- Some features
+
+%  - What I use if for
+
+%  - Demo with filtering, merging etc
+
+
+%- How kcov works
+
+%  - A bit about how gcov works
+
+%  - Breakpoints
+
+%  - Differences between OSX and Linux/FreeBSD
+
+ % - Complain a bit about elf_version/libdwarf etc.
+
+
+% - What about speed?
