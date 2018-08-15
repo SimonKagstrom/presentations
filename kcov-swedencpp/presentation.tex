@@ -1,6 +1,10 @@
 \documentclass{beamer}
 
 \usepackage[utf8]{inputenc}
+\usepackage{pgfpages}
+\usepackage{listings}
+\setbeameroption{show notes on second screen}
+
 \usetheme{Madrid}
 \graphicspath{ {./images/}{../images/} }
 
@@ -32,6 +36,37 @@
 \begin{frame}
   \frametitle{Outline}
   \tableofcontents
+  \note{Unix environment}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Problems with traditional tools}
+  \begin{itemize}
+  \item gcov + lcov is a multi-step process
+  \item gcov leaves droppings after compilation/running
+  \item A program which crashes will not generate coverage data
+  \end{itemize}
+  \begin{Example}
+    \begin{semiverbatim}
+     \scriptsize
+\$ gcc -g -Wall --coverage goto-fail.c
+\$ ./a.out
+\$ ls
+  a.out  goto-fail.c  goto-fail.gcda  goto-fail.gcno
+\$ lcov --capture --directory project-dir --output-file coverage.info
+\$ genhtml coverage.info --output-directory out
+    \end{semiverbatim}
+  \end{Example}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Using kcov}
+  Interactive Demo!
 \end{frame}
 
 \end{document}
