@@ -65,8 +65,43 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Using kcov}
-  Interactive Demo!
+  \frametitle{Kcov overview}
+  \begin{itemize}
+    \item kcov
+    \item Interactive Demo!
+  \end{itemize}
+
+  \note{
+    \begin{itemize}
+      \item Make sure /tmp/kcov is empty
+
+      \item kcov /tmp/kcov projects/build/kcov/target/src/kcov
+
+      \item Show result in browser
+
+      \item Show how a single file looks, describe 1/3 etc
+
+      \item Show file list again, note /usr/include etc
+
+      \item Remove /tmp/kcov
+  \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{features}
+
+  \begin{itemize}
+    \item kalle
+  \end{itemize}
+
+  \note{
+    \begin{itemize}
+      \item Run kcov with --include-pattern, note that --exclude-pattern and paths also exist
+
+      \item Run kcov on another program (calc?), show that output is merged
+    \end{itemize}
+  }
 \end{frame}
 
 \end{document}
