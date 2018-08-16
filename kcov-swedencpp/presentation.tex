@@ -5,8 +5,15 @@
 \usepackage{listings}
 \setbeameroption{show notes on second screen}
 
-\usetheme{Madrid}
+\usetheme{Warsaw}
 \graphicspath{ {./images/}{../images/} }
+
+\AtBeginSection[specialframe]
+{
+  \begin{frame}{Table of Contents}
+   \tableofcontents[currentsection]
+  \end{frame}
+}
 
 \title[Kcov - a single-step code coverage tool] %optional
 {Kcov - a single-step code coverage tool}
@@ -32,20 +39,14 @@
   \includegraphics<2>[height=8cm]{goto_fail}
 \end{frame}
 
-
-\begin{frame}
-  \frametitle{Outline}
+\begin{frame}{Outline}
   \tableofcontents
   \note{Unix environment}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Outline}
-  \tableofcontents
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Problems with traditional tools}
+\section{Overview}
+\subsection{Problems with traditional tools}
+\begin{frame}[fragile]{Problems with traditional tools}
   \begin{itemize}
   \item gcov + lcov is a multi-step process
   \item gcov leaves droppings after compilation/running
@@ -64,8 +65,8 @@
   \end{Example}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Kcov overview}
+\subsection{Kcov overview and demo}
+\begin{frame}{Kcov overview}
   \begin{itemize}
     \item kcov
     \item Interactive Demo!
@@ -88,8 +89,8 @@
   }
 \end{frame}
 
-\begin{frame}
-  \frametitle{features}
+\subsection{Main features of kcov}
+\begin{frame}{Features}
 
   \begin{itemize}
     \item kalle
@@ -102,6 +103,38 @@
       \item Run kcov on another program (calc?), show that output is merged
     \end{itemize}
   }
+\end{frame}
+
+\section{How kcov works}
+\subsection{Overview}
+\begin{frame}{How kcov works}
+\end{frame}
+
+\subsection{Elves, dwarfs and breakpoints}
+\begin{frame}{Dwarf}
+\end{frame}
+
+\subsection{Implementation quirks on different architectures}
+\begin{frame}{kcov on Linux, FreeBSD and Mac OSX}
+\end{frame}
+
+\subsection{ELF/Dwarf implementation quirks}
+\begin{frame}{Libelf}
+\end{frame}
+
+\section{Other kcov features}
+
+\subsection{Integration with CI systems}
+\begin{frame}{Integration}
+  Coveralls.io, codecov.io, cobertura, 
+\end{frame}
+
+\subsection{Python/Bash}
+\begin{frame}{Python}
+\end{frame}
+
+\subsection{System mode}
+\begin{frame}{System mode}
 \end{frame}
 
 \end{document}
