@@ -31,17 +31,35 @@
 
 \begin{document}
 
-\frame{\titlepage}
+\begin{frame}
+  \titlepage
+  \note{My name is Simon Kågström and I work at Net Insight. Today I will present kcov, a code coverage collection and presentation tool. So let's get started!}
+\end{frame}
 
 \begin{frame}
   \frametitle{Motivation}
+  \note{\footnotesize I'll start with some motivation for the talk. Code coverage, as described by wikipedia, is the degree to which the source code of a program is executed when a particular test suite executes, measured in percentage.
+
+    So let's say you're the developer of a particular piece of code, as shown on the slide. You run some tests on it, and collect code coverage to see how well your test suite actually works.
+
+    Next.
+
+    After code coverage collection, you will get a report which looks something like this. Red lines denote executable lines which have not been executed, green lines are executed lines. White lines is non-executable lines.
+
+    Hmm... Hang on now, why is everything between line 128 and 143 marked as non-executable? Some of you might already have identified the code in question. This is the SSL/TLS bug known as ``goto fail''. Looking at line 127, you can see that the control flow will unconditionally jump to the fail label, so lines 128 to 143 are indeed unreachable.
+
+  Stands out pretty clear from the coverage report don't you think? Modern compilers will also issue a warning on code like this.}
   \includegraphics<1>[height=8cm]{goto_fail_no_coverage}
   \includegraphics<2>[height=8cm]{goto_fail}
 \end{frame}
 
 \begin{frame}{Outline}
   \tableofcontents
-  \note{Unix environment}
+  \note{This is the outline of the talk. I will start with a short discussion of problems and limitations with traditional tools, then introduce kcov and demonstrate some of the main features.
+
+    I will then go into a bit of details about how kcov has been implemented, and give some lessons learned in the process.
+
+  Finally, I will discuss some other features of kcov, which are perhaps a bit less relevant on a C++ workshop.}
 \end{frame}
 
 \section{Overview}
@@ -68,13 +86,21 @@
 \subsection{Kcov overview and demo}
 \begin{frame}{Kcov overview}
   \begin{itemize}
-    \item kcov
-    \item Interactive Demo!
+  \item Kcov started as a fork of Bcov by Thomas Neumann in 2010
+  \item It is not related to the kernel Kcov (and predates it by many years)
+  \item<2-> Can you guess why it's called kcov?
+  \item<3-> Interactive Demo!
   \end{itemize}
 
   \note{
-    \begin{itemize}
-      \item Make sure /tmp/kcov is empty
+    Kcov started as a fork of bcov, which doesn't rely on compile-time instrumentation of binaries, but instead uses the DWARF debug information present as long as you compile with -g. It can also produce lcov-like output.
+
+    I thought bcov was a great idea, but it was still somewhat cumbersome to use, separating collection and reporting. The codebase was a bit difficult for me to follow, so I forked it instead of improving on the original project. Today I would problably not have done it that way.
+
+    Guess the name! The original idea I had was to use kernel kprobes, which allows setting breakpoints on kernel code, while still retaining the userspace functionality. K therfore stands for kernel.
+
+      \begin{itemize}
+      \item Demo: Make sure /tmp/kcov is empty
 
       \item kcov /tmp/kcov projects/build/kcov/target/src/kcov
 
@@ -108,6 +134,9 @@
 \section{How kcov works}
 \subsection{Overview}
 \begin{frame}{How kcov works}
+  \note{}
+  % Disassembly
+  % file:line -> addr
 \end{frame}
 
 \subsection{Elves, dwarves and breakpoints}
@@ -123,6 +152,7 @@
 
 \subsection{ELF/Dwarf implementation quirks}
 \begin{frame}{Libelf}
+  % file:line maps to an invalid address
 \end{frame}
 
 \section{Other kcov features}
