@@ -1,9 +1,10 @@
 \documentclass{beamer}
 
+
 \usepackage[utf8]{inputenc}
 \usepackage{pgfpages}
-\usepackage{listings}
-\setbeameroption{show notes on second screen}
+\setbeameroption{show notes}
+\setbeameroption{show notes on second screen=left}
 
 \usetheme{Warsaw}
 \graphicspath{ {./images/}{../images/} }
@@ -38,17 +39,21 @@
 
 \begin{frame}
   \frametitle{Motivation}
-  \note{\footnotesize I'll start with some motivation for the talk. Code coverage, as described by wikipedia, is the degree to which the source code of a program is executed when a particular test suite executes, measured in percentage.
+  \note{
+    \footnotesize
+    I'll start with some motivation for the talk. Code coverage, as described by wikipedia, is the degree to which the source code of a program is executed when a particular test suite executes, measured in percentage.
 
     So let's say you're the developer of a particular piece of code, as shown on the slide. You run some tests on it, and collect code coverage to see how well your test suite actually works.
 
-    Next.
-
+    NEXT
+    
     After code coverage collection, you will get a report which looks something like this. Red lines denote executable lines which have not been executed, green lines are executed lines. White lines is non-executable lines.
 
     Hmm... Hang on now, why is everything between line 128 and 143 marked as non-executable? Some of you might already have identified the code in question. This is the SSL/TLS bug known as ``goto fail''. Looking at line 127, you can see that the control flow will unconditionally jump to the fail label, so lines 128 to 143 are indeed unreachable.
 
-  Stands out pretty clear from the coverage report don't you think? Modern compilers will also issue a warning on code like this.}
+    Stands out pretty clear from the coverage report don't you think? Modern compilers will also issue a warning on code like this.
+    }
+    
   \includegraphics<1>[height=8cm]{goto_fail_no_coverage}
   \includegraphics<2>[height=8cm]{goto_fail}
 \end{frame}
@@ -132,18 +137,22 @@
 \end{frame}
 
 \section{How kcov works}
-\subsection{Overview}
-\begin{frame}{How kcov works}
-  \note{}
-  % Disassembly
-  % file:line -> addr
-\end{frame}
 
 \subsection{Elves, dwarves and breakpoints}
-\begin{frame}{Dwarf stabs Elf}
+\begin{frame}{Dwarf stabs Mach-O Elf}
+  \note{The world of binary file formats and debug information is full of funny names. Stabs is an older format for debug information, but ELF, Mach-O and Dwarf is in active use on Unix systems.
+
+    Kcov relies on Dwarf debug information to set a breakpoint on each executable line in the program. The debug information contains records of file:line to address mappings, which is exactly what kcov needs.
+% Disassembly here
+    
+    Kcov executes the program in stopped state via ptrace, sets all breakpoints and then lets the program continue again. On each executed breakpoint, kcov marks the file:line pair as executed, removes the breakpoint and lets the program continue again. That's the basic way kcov works.
+  }
   \begin{itemize}
     \item \textbf{elf\_version} must be called at program start!
   \end{itemize}
+  % Disassembly
+  % file:line -> addr
+  % Cleared once it has been executed
 \end{frame}
 
 \subsection{Implementation quirks on different architectures}

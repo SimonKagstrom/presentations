@@ -5,4 +5,4 @@ output/presentation.pdf: presentation.tex
 	cd output && pdflatex ../presentation.tex
 
 view: output/presentation.pdf
-	xpdf -fullscreen $<
+	pdfpc --notes=left $<
