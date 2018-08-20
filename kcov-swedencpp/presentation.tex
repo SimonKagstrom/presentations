@@ -70,6 +70,13 @@
 \section{Overview}
 \subsection{Problems with traditional tools}
 \begin{frame}[fragile]{Problems with traditional tools}
+  \note{On UNIX, the traditional way of collecting code coverage has been to use gcov for collection, and lcov for HTML presentation, if desired. The process is a bit cumbersome, as can be seen in the example below. You first need a special --coverage option, which produces extra metadata files in the build directory. After running the program, you then get data for the actual execution in the build directory.
+
+    After this, you need to run the presentation tool, like lcov, to get actual output. If the process crashes during execution, you will lose the coverage output altogether.
+
+    % Mention clang
+
+    Fortunately, using kcov does away with all these disadvantages, allowing collection without special compiler options, reporting without droppings and all done in a single step. Quite a sales pitch, don't you agree?}
   \begin{itemize}
   \item gcov + lcov is a multi-step process
   \item gcov leaves droppings after compilation/running
