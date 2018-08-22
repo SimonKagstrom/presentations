@@ -136,9 +136,6 @@
 \subsection{Main features of kcov}
 \begin{frame}{Features}
 
-  \begin{itemize}
-  \end{itemize}
-
   \note{
     \begin{itemize}
       \item Run kcov with --include-pattern, note that --exclude-pattern and paths also exist
@@ -148,10 +145,21 @@
   }
 \end{frame}
 
+\subsection{Integration with CI systems}
+\begin{frame}{Integration with CI systems}
+  \begin{itemize}
+  \item<1-> Kcov can produce output for multiple CI systems
+  \item<1-> Uploading to Coveralls.io is built-in
+  \item<2-> Uploading to Codecov.io is supported by the upstream site
+  \end{itemize}
+  \includegraphics<1>[height=6cm]{coveralls}
+  \includegraphics<2>[height=6cm]{codecov}
+\end{frame}
+
 \section{How kcov works}
 
 \subsection{Elves, dwarves and breakpoints}
-\begin{frame}{Dwarf stabs Mach-O Elf}
+\begin{frame}{Dwarf stabs Elf}
   \note{The world of binary file formats and debug information is full of funny names. Stabs is an older format for debug information, but ELF, Mach-O and Dwarf is in active use on Unix systems.
 
     Kcov relies on Dwarf debug information to set a breakpoint on each executable line in the program. The debug information contains records of file:line to address mappings, which is exactly what kcov needs.
@@ -169,6 +177,12 @@
 
 \subsection{Implementation quirks on different architectures}
 \begin{frame}{kcov on Linux, FreeBSD and Mac OSX}
+  \note{There is no fully standardized way of setting and controlling breakpoints on UNIX.The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD.
+
+OSX works in an entirently different way though. The key difference between OSX and Linux/FreeBSD is that OSX uses it's own binary format, Mach-O. So we now have Dwarves, Elves and Mach-O. For ELF, we have libelf to do the parsing, but Apple doesn't publish a library for Mach-O. I therefore opted on a simpler solution on OSX. The LLDB debugger comes with the development environment on OSX, and it conveniently offers a nice C++ API.
+
+So on OSX, the entire parsing, process control and breakpoint setting is only 486 lines of code. The disadvantage with the LLDB implementation is that it's significantly slower than using regular ptrace. During normal debugging, you typically don't set tens of thousands of breakpoints!
+  }
 \end{frame}
 
 \subsection{ELF/Dwarf implementation quirks}
@@ -177,17 +191,6 @@
 \end{frame}
 
 \section{Other kcov features}
-
-\subsection{Integration with CI systems}
-\begin{frame}{Integration}
-  \begin{itemize}
-  \item<1-> Kcov can produce output for multiple CI systems
-  \item<1-> Uploading to Coveralls.io is built-in
-  \item<2-> Uploading to Codecov.io is supported by the upstream site
-  \end{itemize}
-  \includegraphics<1>[height=6cm]{coveralls}
-  \includegraphics<2>[height=6cm]{codecov}
-\end{frame}
 
 \subsection{Python/Bash}
 \begin{frame}{Python}
