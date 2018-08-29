@@ -3,6 +3,8 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{pgfpages}
+\usepackage{xcolor}
+
 \setbeameroption{show notes}
 \setbeameroption{show notes on second screen=left}
 
@@ -124,7 +126,7 @@
 
       \item Show file list again, note /usr/include etc
 
-      \item Remove /tmp/kcov
+      \item Remove /tmp/kcov. All output is placed in the out-directory, so this cleans up everything from the coverage run
 
       \item Run again with --include-pattern
 
@@ -159,7 +161,7 @@
 \section{How kcov works}
 
 \subsection{Elves, dwarves and breakpoints}
-\begin{frame}{Dwarf stabs Elf}
+\begin{frame}[fragile]{Dwarf stabs Elf}
   \note{The world of binary file formats and debug information is full of funny names. Stabs is an older format for debug information, but ELF, Mach-O and Dwarf is in active use on Unix systems.
 
     Kcov relies on Dwarf debug information to set a breakpoint on each executable line in the program. The debug information contains records of file:line to address mappings, which is exactly what kcov needs.
@@ -170,7 +172,23 @@
   \begin{itemize}
     \item \textbf{elf\_version} must be called at program start!
   \end{itemize}
-  % Disassembly
+  \begin{Example}
+    \begin{semiverbatim}
+      \scriptsize
+return (void*)op\_create(RPAR);
+\textcolor{red}{400ff7}:       bf 30 00 00 00          mov    \$0x30,\%edi
+400ffc:       e8 1f 05 00 00          callq  401520 <op\_create>
+401001:       e9 20 ff ff ff          jmpq   400f26 <ts\_next\_token+0x46>
+401006:       66 2e 0f 1f 84 00 00    nopw   \%cs:0x0(\%rax,\%rax,1)
+40100d:       00 00 00
+p\_state->last\_token\_is\_od = 0;
+\textcolor{red}{401010}:       c7 43 08 00 00 00 00    movl   \$0x0,0x8(\%rbx)
+return (void*)op\_create(op);
+\textcolor{red}{401017}:       bf 04 00 00 00          mov    \$0x4,\%edi
+40101c:       e8 ff 04 00 00          callq  401520 <op\_create>
+   \end{semiverbatim}
+   \end{Example}
+ % Disassembly
   % file:line -> addr
   % Cleared once it has been executed
 \end{frame}
