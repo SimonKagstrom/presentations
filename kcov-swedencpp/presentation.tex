@@ -100,6 +100,7 @@
 \begin{frame}{Kcov overview}
   \begin{itemize}
   \item Kcov started as a fork of Bcov by Thomas Neumann in 2010
+  \item Bcov was a great idea, but I thought it could be improved upon
   \item It is not related to the kernel Kcov (and predates it by many years)
   \item<2-> Can you guess why it's called kcov?
   \end{itemize}
@@ -113,6 +114,7 @@
   }
 \end{frame}
 
+\subsection{Main features of kcov}
 \begin{frame}{Interactive Demo!}
   \note{
       \begin{itemize}
@@ -131,15 +133,7 @@
       \item Run again with --include-pattern
 
       \item Run calc, show merged report
-  \end{itemize}
-  }
-\end{frame}
 
-\subsection{Main features of kcov}
-\begin{frame}{Features}
-
-  \note{
-    \begin{itemize}
       \item Run kcov with --include-pattern, note that --exclude-pattern and paths also exist
 
       \item Run kcov on another program (calc?), show that output is merged
@@ -165,6 +159,10 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 \end{frame}
 
 \section{How kcov works}
+\begin{frame}{Design}
+  \note{}
+  \includegraphics[width=\linewidth]{design}
+\end{frame}
 
 \subsection{Elves, dwarves and breakpoints}
 \begin{frame}[fragile]{Dwarf stabs Elf}
@@ -212,6 +210,10 @@ So on OSX, the entire parsing, process control and breakpoint setting is only 48
 \subsection{ELF/Dwarf implementation quirks}
 \begin{frame}{Libelf}
   % file:line maps to an invalid address
+  % ptrace: Does not set breakpoints, modifies memory
+  % ptrace is not recursive, can't strace kcov
+  % When a process stops, you need to dump the register file and find the PC. This is
+  % architecture and OS dependent
 \end{frame}
 
 \section{Other kcov features}
