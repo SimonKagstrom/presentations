@@ -160,7 +160,15 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 
 \section{How kcov works}
 \begin{frame}{Design}
-  \note{}
+  \note{
+    \footnotesize
+    Kcov is written in C++, but unfortunately it's C++03, so a bit unmodern for these kinds of meetings! I'll just shortly discuss the kcov design a bit.
+
+The design revolves around a set of abstract interfaces, as show on the figure and through heavy use of the observer pattern. Binary files are parsed via the IFileParser interface. Binary execution is handled through the IEngine interface, and output is handled via the IWriter interface.
+
+Control is handled through the collector, which receives file/line to address mappings from the file parser. The collector will then set breakpoints, execute the program, and collect breakpoint hits through the engine. The reporter receives and memorizes executed lines and reports them to the writers, which produces the output. Pretty simple, don't you think?
+
+The design was originally made to accomodate ELF and ptrace, and the only true File parser is the Elf parser. When kcov is used with Python, bash or indeed on OSX via LLDB, parsing and execution is kept together, so these implement both the engine and the file parser interfaces.}
   \includegraphics[width=\linewidth]{design}
 \end{frame}
 
