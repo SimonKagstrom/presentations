@@ -37,7 +37,7 @@
 
 \begin{frame}
   \titlepage
-  \note{My name is Simon Kågström and I work at Net Insight. Tonight I will present kcov, a code coverage collection and presentation tool for UNIX systems.
+  \note{My name is Simon Kågström and I work at Net Insight as a developer of embedded software. Tonight I will present kcov, a code coverage collection and presentation tool for UNIX systems.
 
 So let's get started!}
 \end{frame}
@@ -46,18 +46,18 @@ So let's get started!}
   \frametitle{Motivation}
   \note<1->{
     \footnotesize
-    I'll start with some motivation for the talk. Code coverage, as described by wikipedia, is the degree to which the source code of a program is executed when a particular test suite executes, measured in percentage.
+    I'll start with some motivation for the talk. Code coverage, as described by wikipedia, is the degree to which the source code of a program is executed when a particular test suite executes, measured in percentage. Code coverage tools can typically show which source code lines which have been executed, and sometimes how many times they are executed.
 
-    So let's say you're the developer of a particular piece of code, as shown on the slide. You run some tests on it, and collect code coverage to see how well your test suite actually works.
+    So let's say you're the developer of a particular piece of code, as shown on the slide. You run some tests on it, and collect code coverage to see how well your test suite actually works. NEXT.
   }
+
   \note<2>{
-    After code coverage collection, you will get a report which looks something like this. Red lines denote executable lines which have not been executed, green lines are executed lines. White lines is non-executable lines.
+    After code coverage collection, you will get a report which looks something like this. Red lines denote executable lines which have not been executed, green lines are executed lines. White lines are non-executable lines.
 
     Hmm... Hang on now, why is everything between line 128 and 143 marked as non-executable? Some of you might already have identified the code in question. This is the SSL/TLS bug known as ``goto fail''. Looking at line 127, you can see that the control flow will unconditionally jump to the fail label, so lines 128 to 143 are indeed unreachable.
 
-    Stands out pretty clear from the coverage report don't you think? Modern compilers will also issue a warning on code like this.
-    }
-    
+    Stands out pretty clear from the coverage report don't you think? Modern compilers will also issue a warning on code like this.}
+
   \includegraphics<1>[height=8cm]{goto_fail_no_coverage}
   \includegraphics<2>[height=8cm]{goto_fail}
 \end{frame}
@@ -76,9 +76,7 @@ So let's get started!}
 \begin{frame}[fragile]{Problems with traditional tools}
   \note{On UNIX, the traditional way of collecting code coverage has been to use gcov for collection, and lcov for HTML presentation, if desired. The process is a bit cumbersome, as can be seen in the example below. You first need a special --coverage option, which produces extra metadata files in the build directory. After running the program, you then get data for the actual execution in the build directory.
 
-    After this, you need to run the presentation tool, like lcov, to get actual output. If the process crashes during execution, you will lose the coverage output altogether.
-
-    % Mention clang
+    After this, you need to run the presentation tool, like lcov, to get actual output. If the process crashes during execution, you will lose the coverage output altogether. Gcov also doesn't gather code coverage from shared libraries.
 
     Fortunately, using kcov does away with all these disadvantages, allowing collection without special compiler options, reporting without droppings and all done in a single step. Quite a sales pitch, don't you agree? We should note here that there are other collection methods, for example via clang and obviously a set of commercial tools.}
   \begin{itemize}
