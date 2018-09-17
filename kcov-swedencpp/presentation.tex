@@ -62,9 +62,33 @@ So let's get started!}
   \includegraphics<2>[height=8cm]{goto_fail}
 \end{frame}
 
+\begin{frame}
+  \frametitle{More motivation}
+
+  \note{We programmers should be humble people. And why is that?
+    Because we all fail at times, and shoot ourselves in our
+    feet. I've done this myself many times. I've failed with raw
+    pointers, with shared pointers, from lambdas, using the Linker and
+    so on. I've even shot myself in the foot using Java bytecode! So I
+    try to be humble about my abilities, I know I will fail again and again.
+
+    However, this is why I believe we need good tooling to assist
+    us. Code coverage is one such tool, together with for example the
+    clang sanitizers, good debuggers and so on.
+
+    It's also the reason why good methodology is important, through
+    for example test driven development and unit testing. Especially
+    when developing unit tests, I believe code coverage collection has
+    a lot to offer, and it's the area where I personally use it most. Pretty much daily in fact.
+  }
+  \begin{itemize}
+    \item As per the last example, the main motivation for code coverage is to detect unexecuted code
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Outline}
   \tableofcontents
-  \note{This is the outline of the talk. I will start with a short discussion of problems and limitations with traditional tools, then introduce kcov and demonstrate some of the main features.
+  \note{This is the outline of the rest of the talk. I will start with a short discussion of problems and limitations with traditional tools, then introduce kcov and demonstrate some of the main features.
 
     I will then go into a bit of details about how kcov has been implemented, and give some lessons learned in the process.
 
@@ -101,6 +125,7 @@ So let's get started!}
 \begin{frame}{Kcov overview}
   \begin{itemize}
   \item Kcov started as a fork of Bcov by Thomas Neumann in 2010
+  \item Bcov doesn't rely on compile-time instrumentation, but instead uses DWARF debug data
   \item Bcov was a great idea, but I thought it could be improved upon
   \item It is not related to the kernel Kcov (and predates it by many years)
   \item<2-> Can you guess why it's called kcov?
@@ -112,6 +137,8 @@ So let's get started!}
     I thought bcov was a great idea, but it was still somewhat cumbersome to use, separating collection and reporting. The codebase was a bit difficult for me to follow, so I forked it instead of improving on the original project. Today I would problably not have done it that way.
 
     Guess the name! The original idea I had was to use kernel kprobes, which allows setting breakpoints on kernel code, while still retaining the userspace functionality. K therfore stands for kernel.
+
+    The kernel functionality never worked very well though.
   }
 \end{frame}
 
@@ -159,6 +186,15 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
   \includegraphics<3>[height=6cm]{codecov}
 \end{frame}
 
+\subsection{Python/Bash}
+\begin{frame}{Python and Bash code coverage}
+  \begin{itemize}
+    \item Kcov can also collect coverage for Python
+  \end{itemize}
+
+  \includegraphics[width=7cm]{bash}\includegraphics[width=5cm]{python}
+\end{frame}
+
 \section{How kcov works}
 \begin{frame}{Design}
   \note{
@@ -182,9 +218,6 @@ The design was originally made to accomodate ELF and ptrace, and the only true F
     
     Kcov executes the program in stopped state via ptrace, sets all breakpoints and then lets the program continue again. On each executed breakpoint, kcov marks the file:line pair as executed, removes the breakpoint and lets the program continue again. That's the basic way kcov works.
   }
-  \begin{itemize}
-    \item \textbf{elf\_version} must be called at program start!
-  \end{itemize}
   \begin{Example}
     \begin{semiverbatim}
       \scriptsize
@@ -207,17 +240,36 @@ The design was originally made to accomodate ELF and ptrace, and the only true F
 \end{frame}
 
 \subsection{Implementation quirks on different architectures}
-\begin{frame}{kcov on Linux, FreeBSD and Mac OSX}
-  \note{There is no fully standardized way of setting and controlling breakpoints on UNIX.The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD.
+\begin{frame}[fragile]{kcov on Linux, FreeBSD and Mac OSX}
+  \note{There is no fully standardized way of setting and controlling breakpoints on UNIX. The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD. On Linux and FreeBSD, libelf and elfutils is used for parsing binaries.
 
 OSX works in an entirently different way though. The key difference between OSX and Linux/FreeBSD is that OSX uses it's own binary format, Mach-O. So we now have Dwarves, Elves and Mach-O. For ELF, we have libelf to do the parsing, but Apple doesn't publish a library for Mach-O. I therefore opted on a simpler solution on OSX. The LLDB debugger comes with the development environment on OSX, and it conveniently offers a nice C++ API.
 
 So on OSX, the entire parsing, process control and breakpoint setting is only 486 lines of code. The disadvantage with the LLDB implementation is that it's significantly slower than using regular ptrace. During normal debugging, you typically don't set tens of thousands of breakpoints!
   }
+    \begin{itemize}
+    \item ptrace is a truly archaic interface, and pretty non-portable
+    \item libelf is also interesting: \textbf{elf\_version} must be called at program start!
+    \item Mac OSX has been implemented using the LLDB debugger as a library
+    \end{itemize}
+  \begin{Example}
+    \begin{semiverbatim}
+      \scriptsize
+static long getRegs(pid\_t pid, void *addr, void *regs, size\_t len)
+\{
+#if defined(\_\_aarch64\_\_)
+    struct iovec iov = \{regs, len\};
+    return ptrace(PTRACE\_GETREGSET, pid, (void *)NT\_PRSTATUS, &iov);
+#else
+    return ptrace((\__ptrace\_request ) PTRACE\_GETREGS, pid, NULL, regs);
+#endif
+\}
+    \end{semiverbatim}
+  \end{Example}
 \end{frame}
 
 \subsection{ELF/Dwarf implementation quirks}
-\begin{frame}[fragile]{Dwarf quirkls}
+\begin{frame}[fragile]{Dwarf quirks}
   \note{
     \footnotesize
     There are some interesting quirks and bugs concerning Dwarf usage in Linux. The most irritating and interesting one is when the file:line to address entries contain invalid entries. We again have the disassembly output you saw before. NEXT. However, if you look at the second entry marked in red here, you see that it points into the middle of an instruction.
@@ -251,11 +303,10 @@ So on OSX, the entire parsing, process control and breakpoint setting is only 48
   % When a process stops, you need to dump the register file and find the PC. This is
   % architecture and OS dependent
 
-\section{Other kcov features}
-
-\subsection{Python/Bash}
-\begin{frame}{Python}
+\begin{frame}{So how does Python and Bash work?}
 \end{frame}
+
+\section{Other kcov features}
 
 \subsection{System mode}
 \begin{frame}{System mode}
