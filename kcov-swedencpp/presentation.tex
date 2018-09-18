@@ -65,21 +65,20 @@ So let's get started!}
 \begin{frame}
   \frametitle{More motivation}
 
-  \note{We programmers should be humble people. And why is that?
-    Because we all fail at times, and shoot ourselves in our
-    feet. I've done this myself many times. I've failed with raw
-    pointers, with shared pointers, from lambdas, using the Linker and
-    so on. I've even shot myself in the foot using Java bytecode! So I
-    try to be humble about my abilities, I know I will fail again and again.
+  \note{We programmers should be humble people. Do you think we are?
+    Anyway, why is that?  Because we all fail at times, and shoot
+    ourselves in our feet. I've done this myself many times. I've
+    failed with raw pointers, with shared pointers, from lambdas,
+    using the Linker and so on. I've even shot myself in the foot
+    using Java bytecode! So I try to be humble about my abilities, I
+    know I will fail again and again.
 
     However, this is why I believe we need good tooling to assist
     us. Code coverage is one such tool, together with for example the
     clang sanitizers, good debuggers and so on.
 
     It's also the reason why good methodology is important, through
-    for example test driven development and unit testing. Especially
-    when developing unit tests, I believe code coverage collection has
-    a lot to offer, and it's the area where I personally use it most. Pretty much daily in fact.
+    for example test driven development and unit testing.
   }
   \begin{itemize}
   \item Programming is hard!
@@ -99,8 +98,39 @@ So let's get started!}
 
 \section{Overview}
 \subsection{Some words about code coverage}
-\begin{frame}{ddd}
-  \note{}
+\begin{frame}{Code coverage terminology}
+  \note{\footnotesize Most of you have probably encountered code coverage collection
+    already, in some form. There are many variants of code coverage of
+    increasing refinement, as you can see on the slide, and there are
+    also others which are even more detailed and specialized.
+
+    In most settings, MC/DC coverage is the holy grail of code
+    coverage, but also something which is incredibly hard to achive in
+    tests. So does kcov instrumentation support MC/DC? Unfortunately,
+    it's more of an unholy grail solution, focusing on statement
+    coverage like most other collectors do.
+
+    So is code coverage collection effective? I've read a few studies,
+    and the effect on software quality is mixed and unclear. That is,
+    higher coverage percentage doesn't necessarily translate into
+    fewer bugs. Interestingly, the type of coverage, from statement
+    coverage and upwards, also doesn't make very much of a difference.
+
+    I believe code coverage has more to offer as a test development
+    tool. Especially when developing unit tests it's useful simply to
+    see if your tests miss something important, and it's the area
+    where I personally use it most. Pretty much daily in fact.}
+
+  % Coverage Is Not Strongly Correlated with Test Suite Effectiveness, Laura Inozemtseva and Reid Holmes
+  \begin{itemize}
+  \item \textbf{Function coverage}: Functions in the program
+  \item \textbf{Statement coverage}: Statements in the program
+  \item \textbf{Branch coverage}: All ways through branches (if/case)
+  \item \textbf{Condition coverage}: All boolean expressions evaluated to both true/false
+  \item \textbf{Modified condition/decision coverage (MC/DC)}: Each decision takes every possible outcome
+  \end{itemize}
+
+  (From Wikipedia)
 \end{frame}
 
 
