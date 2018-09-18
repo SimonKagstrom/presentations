@@ -6,6 +6,7 @@
 \usepackage{xcolor}
 
 \setbeameroption{show notes}
+\setbeamertemplate{note page}[plain]
 \setbeameroption{show notes on second screen=left}
 
 \usetheme{Warsaw}
@@ -83,8 +84,8 @@ So let's get started!}
   \begin{itemize}
   \item Programming is hard!
   \item To improve software quality, good tooling and methodology is important
-  \item Code coverage fits unit testing very well
   \end{itemize}
+  \includegraphics<1>[width=\linewidth]{sq_skull_jarring}
 \end{frame}
 
 \begin{frame}{Outline}
@@ -164,21 +165,25 @@ So let's get started!}
 \begin{frame}{Kcov overview}
   \begin{itemize}
   \item Kcov started as a fork of Bcov by Thomas Neumann in 2010
-  \item Bcov doesn't rely on compile-time instrumentation, but instead uses DWARF debug data
+  \item Bcov doesn't rely on compile-time instrumentation, but instead uses debug information
   \item Bcov was a great idea, but I thought it could be improved upon
   \item<2-> Can you guess why it's called kcov?
   \item<3-> It is not related to the kernel Kcov (and predates it by many years)
   \end{itemize}
 
   \note{
-    Kcov started as a fork of bcov, which doesn't rely on compile-time instrumentation of binaries, but instead uses the DWARF debug information present as long as you compile with -g. It can also produce lcov-like output.
+    Kcov started as a fork of bcov, which doesn't rely on compile-time instrumentation of binaries, but instead uses the debug information present as long as you compile with -g. It can also produce lcov-like output.
 
     I thought bcov was a great idea, but it was still somewhat cumbersome to use, separating collection and reporting. The codebase was a bit difficult for me to follow, so I forked it instead of improving on the original project. Today I would problably not have done it that way.
 
-    Guess the name! The original idea I had was to use kernel kprobes, which allows setting breakpoints on kernel code, while still retaining the userspace functionality. K therfore stands for kernel.
+    Guess the name! The original idea I had was to use kernel kprobes,
+    which allows setting breakpoints on kernel code, while still
+    retaining the userspace functionality. K therfore stands for
+    kernel. The kernel functionality via kpropbes never worked very
+    well though.
 
-    The kernel functionality never worked very well though.
-  }
+    Confusingly, there is now a kcov for the kernel. The kernel kcov
+    is used to more intelligently guide syscall fuzzers.}
 \end{frame}
 
 \subsection{Main features of kcov}
@@ -204,6 +209,8 @@ So let's get started!}
       \item Run kcov with --include-pattern, note that --exclude-pattern and paths also exist
 
       \item Run kcov on another program (calc?), show that output is merged
+
+      \item Discuss --collect-only, --report-only
     \end{itemize}
   }
 \end{frame}
@@ -313,6 +320,7 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 \end{frame}
 
 \subsection{Implementation quirks on different architectures}
+
 \begin{frame}[fragile]{kcov on Linux, FreeBSD and Mac OSX}
   \note{\footnotesize There is no fully standardized way of setting and controlling breakpoints on UNIX. The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD. On Linux and FreeBSD, libelf and elfutils is used for parsing binaries.
 
@@ -355,6 +363,11 @@ The design was originally made to accomodate ELF and ptrace, and the only true F
 \end{frame}
 
 \subsection{ELF/Dwarf implementation quirks}
+\begin{frame}{So are there any interesting bugs?}
+  \note{So are there any interesting bugs affecting kcov?}
+  \includegraphics[width=\linewidth]{sq_slotmachine}
+\end{frame}
+
 \begin{frame}[fragile]{Dwarf quirks}
   \note{
     \footnotesize
@@ -362,7 +375,7 @@ The design was originally made to accomodate ELF and ptrace, and the only true F
 
     This is possible on x86 since it has variable instruction length, so an instruction can start on any byte address. Now, a breakpoint on x86 is simply a special instruction, encoded with a single byte, 0xcc hex. Setting a breakpoint therefore means overwriting the start of the instruction you want to break at with 0xcc. But if 0xcc is written into the middle of an instruction, you either get an invalid instruction, or even worse, a valid but unintended instruction.
 
-    kcov works around this by simply disassembing the entire program, and discarding Dwarf entries which doesn't point to the start of an instruction. This is somewhat expensive, so it's only enabled with an option. On architectures which have a fixed instruction length, it instead discards entries which are unaligned.}
+    kcov works around this by simply disassembing the entire program, and discarding Dwarf entries which doesn't point to the start of an instruction. This is somewhat expensive, so it's only enabled with an option. On architectures which have a fixed instruction length, it instead discards entries which are unaligned to natural instruction borders.}
   \begin{itemize}
     \item Dwarf generation on Linux is sometimes buggy, containing invalid entries
   \end{itemize}
