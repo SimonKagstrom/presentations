@@ -82,7 +82,9 @@ So let's get started!}
     a lot to offer, and it's the area where I personally use it most. Pretty much daily in fact.
   }
   \begin{itemize}
-    \item As per the last example, the main motivation for code coverage is to detect unexecuted code
+  \item Programming is hard!
+  \item To improve software quality, good tooling and methodology is important
+  \item Code coverage fits unit testing very well
   \end{itemize}
 \end{frame}
 
@@ -96,6 +98,12 @@ So let's get started!}
 \end{frame}
 
 \section{Overview}
+\subsection{Some words about code coverage}
+\begin{frame}{ddd}
+  \note{}
+\end{frame}
+
+
 \subsection{Problems with traditional tools}
 \begin{frame}[fragile]{Problems with traditional tools}
   \note{On UNIX, the traditional way of collecting code coverage has been to use gcov for collection, and lcov for HTML presentation, if desired. The process is a bit cumbersome, as can be seen in the example below. You first need a special --coverage option, which produces extra metadata files in the build directory. After running the program, you then get data for the actual execution in the build directory.
@@ -121,14 +129,15 @@ So let's get started!}
   \end{Example}
 \end{frame}
 
+\section{Kcov usage}
 \subsection{Kcov overview}
 \begin{frame}{Kcov overview}
   \begin{itemize}
   \item Kcov started as a fork of Bcov by Thomas Neumann in 2010
   \item Bcov doesn't rely on compile-time instrumentation, but instead uses DWARF debug data
   \item Bcov was a great idea, but I thought it could be improved upon
-  \item It is not related to the kernel Kcov (and predates it by many years)
   \item<2-> Can you guess why it's called kcov?
+  \item<3-> It is not related to the kernel Kcov (and predates it by many years)
   \end{itemize}
 
   \note{
@@ -188,8 +197,9 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 
 \subsection{Python/Bash}
 \begin{frame}{Python and Bash code coverage}
+  \note{Judging by the number of reported github issues, Bash coverage collection is surprisingly popular. Or the kcov implementation is just buggy!}
   \begin{itemize}
-    \item Kcov can also collect coverage for Python
+    \item Kcov can also collect coverage for Python and Bash
   \end{itemize}
 
   \includegraphics[width=7cm]{bash}\includegraphics[width=5cm]{python}
@@ -245,8 +255,12 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
     Kcov relies on Dwarf debug information to set a breakpoint on each executable line in the program. The debug information contains records of file:line to address mappings, which is exactly what kcov needs. NEXT. In the disassembly output, you can see this as the instructions marked in red, which correspond to DWARF entries.
 % Disassembly here
     
-    Kcov executes the program in stopped state via ptrace, sets all breakpoints and then lets the program continue again. On each executed breakpoint, kcov marks the file:line pair as executed, removes the breakpoint and lets the program continue again. That's the basic way kcov works.
+    Kcov starts the program in stopped state, sets all breakpoints and then lets the program continue again. On each executed breakpoint, kcov marks the file:line pair as executed, removes the breakpoint and lets the program continue again. That's the basic way kcov works.
   }
+  \begin{itemize}
+    \item DWARF contains file:line to address records, which kcov uses to set breakpoints
+    \item<3-> So how are breakpoints set on Linux?
+  \end{itemize}
   \begin{Example}
     \begin{semiverbatim}
       \scriptsize
@@ -270,7 +284,7 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 
 \subsection{Implementation quirks on different architectures}
 \begin{frame}[fragile]{kcov on Linux, FreeBSD and Mac OSX}
-  \note{There is no fully standardized way of setting and controlling breakpoints on UNIX. The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD. On Linux and FreeBSD, libelf and elfutils is used for parsing binaries.
+  \note{\footnotesize There is no fully standardized way of setting and controlling breakpoints on UNIX. The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD. On Linux and FreeBSD, libelf and elfutils is used for parsing binaries.
 
 OSX works in an entirently different way though. The key difference between OSX and Linux/FreeBSD is that OSX uses it's own binary format, Mach-O. So we now have Dwarves, Elves and Mach-O. For ELF, we have libelf to do the parsing, but Apple doesn't publish a library for Mach-O. I therefore opted on a simpler solution on OSX. The LLDB debugger comes with the development environment on OSX, and it conveniently offers a nice C++ API.
 
