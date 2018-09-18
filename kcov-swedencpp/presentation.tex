@@ -152,7 +152,7 @@ So let's get started!}
 
       \item Show result in browser
 
-      \item Show how a single file looks, describe 1/3 etc
+      \item Show how a single file looks, describe 1/3, execution order etc
 
       \item Show file list again, note /usr/include etc
 
@@ -196,23 +196,52 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 \end{frame}
 
 \section{How kcov works}
-\begin{frame}{Design}
-  \note{
-    \footnotesize
-    Kcov is written in C++, but unfortunately it's C++03, so a bit unmodern for these kinds of meetings! I'll just shortly discuss the kcov design a bit.
-
-The design revolves around a set of abstract interfaces, as show on the figure and through heavy use of the observer pattern. Binary files are parsed via the IFileParser interface. Binary execution is handled through the IEngine interface, and output is handled via the IWriter interface.
-
-Control is handled through the collector, which receives file/line to address mappings from the file parser. The collector will then set breakpoints, execute the program, and collect breakpoint hits through the engine. The reporter receives and memorizes executed lines and reports them to the writers, which produces the output. Pretty simple, don't you think?
-
-The design was originally made to accomodate ELF and ptrace, and the only true File parser is the Elf parser. When kcov is used with Python, bash or indeed on OSX via LLDB, parsing and execution is kept together, so these implement both the engine and the file parser interfaces.}
-  \includegraphics[width=\linewidth]{design}
-\end{frame}
 
 \subsection{Elves, dwarves and breakpoints}
-\begin{frame}[fragile]{Dwarf stabs Elf}
-  \note{The world of binary file formats and debug information is full of funny names. Stabs is an older format for debug information, but ELF, Mach-O and Dwarf is in active use on Unix systems.
+\begin{frame}{Dwarf stabs Mach-O Elf}
+  \note{\footnotesize Lets start with an overview of technologies used by
+    kcov. Binaries in Linux are nowadays almost always stored in the
+    ELF binary format. ELF binaries contain sections which contain
+    code, data, constants, relocation information and so on. Where
+    relevant, the sections contain a memory address where the code or
+    data is loaded into memory during execution.
 
+    On Mac OS X, Mach-O is used as the binary format, and functions in
+    pretty much the same way as ELF. Windows has some other format.
+
+    The most important of these for kcov is Dwarf, however. Dwarf is a
+    format for debug information, and is related but independent from
+    the binary formats. Dwarf sections are present in both ELF
+    binaries, and Mach-O dittos and contain information needed by
+    debuggers. For example, the mapping between source lines and
+    addresses is needed when you set a breakpoint on a source line,
+    variable type information when you print variables and so on.
+
+    I guess you've noted by now that the world of binary file formats
+    and debug information is full of funny names. Stabs is an older
+    format for debug information, seldomly used today.
+
+  We'll continue with how kcov uses these on the next slide.}
+
+  \begin{itemize}
+  \item \textbf{ELF} is a binary format used on many Unices
+    \begin{itemize}
+    \item Both for object files, shared libraries and executable files
+    \item Contains the code, data, constants and relocation information
+    \end{itemize}
+
+  \item \textbf{Mach-O} is the binary format used on Mac OS X
+  \item \textbf{Dwarf} is a format for debug information
+    \begin{itemize}
+    \item Contains the mapping between source lines and addresses
+    \item Type information for variables etc
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Instrumenting binaries with kcov}
+  \note{
     Kcov relies on Dwarf debug information to set a breakpoint on each executable line in the program. The debug information contains records of file:line to address mappings, which is exactly what kcov needs. NEXT. In the disassembly output, you can see this as the instructions marked in red, which correspond to DWARF entries.
 % Disassembly here
     
@@ -268,6 +297,19 @@ static long getRegs(pid\_t pid, void *addr, void *regs, size\_t len)
   \end{Example}
 \end{frame}
 
+\begin{frame}{Design}
+  \note{
+    \footnotesize
+    Kcov is written in C++, but unfortunately it's C++03, so a bit unmodern for these kinds of meetings! I'll just shortly discuss the kcov design a bit.
+
+The design revolves around a set of abstract interfaces, as show on the figure and through heavy use of the observer pattern. Binary files are parsed via the IFileParser interface. Binary execution is handled through the IEngine interface, and output is handled via the IWriter interface.
+
+Control is handled through the collector, which receives file/line to address mappings from the file parser. The collector will then set breakpoints, execute the program, and collect breakpoint hits through the engine. The reporter receives and memorizes executed lines and reports them to the writers, which produces the output. Pretty simple, don't you think?
+
+The design was originally made to accomodate ELF and ptrace, and the only true File parser is the Elf parser. When kcov is used with Python, bash or indeed on OSX via LLDB, parsing and execution is kept together, so these implement both the engine and the file parser interfaces.}
+  \includegraphics[width=\linewidth]{design}
+\end{frame}
+
 \subsection{ELF/Dwarf implementation quirks}
 \begin{frame}[fragile]{Dwarf quirks}
   \note{
@@ -278,7 +320,7 @@ static long getRegs(pid\_t pid, void *addr, void *regs, size\_t len)
 
     kcov works around this by simply disassembing the entire program, and discarding Dwarf entries which doesn't point to the start of an instruction. This is somewhat expensive, so it's only enabled with an option. On architectures which have a fixed instruction length, it instead discards entries which are unaligned.}
   \begin{itemize}
-    \item 
+    \item Dwarf generation on Linux is sometimes buggy, containing invalid entries
   \end{itemize}
   \begin{Example}
     \begin{semiverbatim}
@@ -303,10 +345,10 @@ static long getRegs(pid\_t pid, void *addr, void *regs, size\_t len)
   % When a process stops, you need to dump the register file and find the PC. This is
   % architecture and OS dependent
 
+\section{Other kcov features}
+
 \begin{frame}{So how does Python and Bash work?}
 \end{frame}
-
-\section{Other kcov features}
 
 \subsection{System mode}
 \begin{frame}{System mode}
