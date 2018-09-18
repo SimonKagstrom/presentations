@@ -327,6 +327,8 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 OSX works in an entirently different way though. The key difference between OSX and Linux/FreeBSD is that OSX uses it's own binary format, Mach-O. So we now have Dwarves, Elves and Mach-O. For ELF, we have libelf to do the parsing, but Apple doesn't publish a library for Mach-O. I therefore opted on a simpler solution on OSX. The LLDB debugger comes with the development environment on OSX, and it conveniently offers a nice C++ API.
 
 So on OSX, the entire parsing, process control and breakpoint setting is only 486 lines of code. The disadvantage with the LLDB implementation is that it's significantly slower than using regular ptrace. During normal debugging, you typically don't set tens of thousands of breakpoints!
+
+Ptrace is quite messy to work with. The code snippet shown is for dumping the register file when the program stops at a breakpoint. As you can see, it's not standardized between architectures, not to mention between OSes. When you have the registers, kcov needs to know the program counter, which is one of the entries in the register file. Obviously in different positions on different architectures! The easiest way to find it has been to look in GDB or the Linux kernel source code.
   }
     \begin{itemize}
     \item ptrace is a truly archaic interface, and pretty non-portable
