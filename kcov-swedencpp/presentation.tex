@@ -176,6 +176,8 @@ So let's get started!}
   \end{itemize}
 
   \note{
+    My own background really started with bash coverage collection through shcov.
+    
     Kcov started as a fork of bcov, which doesn't rely on compile-time instrumentation of binaries, but instead uses the debug information present as long as you compile with -g. It can also produce lcov-like output.
 
     I thought bcov was a great idea, but it was still somewhat cumbersome to use, separating collection and reporting. The codebase was a bit difficult for me to follow, so I forked it instead of improving on the original project. Today I would problably not have done it that way.
@@ -256,7 +258,11 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
     collection. Judging by the number of reported github issues, Bash
     coverage collection is surprisingly popular. Or the kcov
     implementation is just buggy!
-  }
+
+    Python and bash are a bit different that C/C++ collection, in that
+    it reports line execution counts and not only whether a statement
+    has been executed or not. Obviously, the implementation underneath
+    is also quite different, but I'll disuss that a bit more later.}
   \begin{itemize}
   \item Kcov can also collect coverage for Python and Bash
   \item For Bash and Python, line counts are reported
@@ -341,6 +347,8 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 % Disassembly here
     
     Kcov starts the program in stopped state, sets all breakpoints and then lets the program continue again. On each executed breakpoint, kcov marks the file:line pair as executed, removes the breakpoint and lets the program continue again. That's the basic way kcov works.
+
+    Performance.
   }
   \begin{itemize}
     \item DWARF contains file:line to address records, which kcov uses to set breakpoints
@@ -369,12 +377,53 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 
 \begin{frame}[fragile]{How does kcov know where to set the breakpoint, really?}
 
-  \note{
-  }
+  \note{ So how does kcov know where to set breakpoints? Well, if you
+    look into a process using readelf, you can see that it consists of
+    multiple sections, some of which contain constants, some which
+    contain data (variables), and some of which contain executable code.
+
+    Some of these are loaded into memory when the program is started,
+    at an address you can see under the Address column on the
+    slide. The debug information points into these sections, so with
+    the debug info, you can just set breakpoints at the addresses
+    found in the debug information, right?
+
+    Well, in some cases this is true, but not always. To start with,
+    shared libraries are loaded on different and a bit random
+    locations. They are so called PIEs, position independent
+    executables. Entire programs can also be PIEs, to aid with a
+    security feature called address space randomization.
+
+    Therefore, kcov needs to lookup where the binary sections are
+    actually loaded in memory and adjust the debug info addresses
+    according to that.}
   \begin{itemize}
-  \item What's in the ELF binary
-  \item PIEs, sections loaded into memory
+  \item The ELF binary contains program code in sections, located at address found in the binary
+  \item But shared libraries and PIEs complicate this
   \end{itemize}
+  \begin{Example}
+    \begin{semiverbatim}
+      \scriptsize
+  \$ readelf --wide -S ~/local/bin/calc
+There are 36 section headers, starting at offset 0x7ec8:
+
+Section Headers:
+  [Nr] Name              Type            Address          Off    Size 
+  [...]
+  [10] .rela.plt         RELA            0000000000400a88 000a88 000150
+  [11] .init             PROGBITS        0000000000400bd8 000bd8 000017
+  [12] .plt              PROGBITS        0000000000400bf0 000bf0 0000f0
+  [13] .text             PROGBITS        0000000000400ce0 000ce0 001b42
+  [14] .fini             PROGBITS        0000000000402824 002824 000009
+  [15] .rodata           PROGBITS        0000000000402830 002830 0006f5
+  [...]
+  [26] .comment          PROGBITS        0000000000000000 0046e0 000058
+  [27] .debug\_aranges    PROGBITS        0000000000000000 004738 000090
+  [28] .debug\_info       PROGBITS        0000000000000000 0047c8 001520
+
+    \end{semiverbatim}
+    \end{Example}
+
  % Disassembly
   % file:line -> addr
   % Cleared once it has been executed
@@ -383,7 +432,9 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 \subsection{Implementation quirks on different architectures}
 
 \begin{frame}[fragile]{kcov on Linux, FreeBSD and Mac OSX}
-  \note{\footnotesize There is no fully standardized way of setting and controlling breakpoints on UNIX. The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD. On Linux and FreeBSD, libelf and elfutils is used for parsing binaries.
+  \note{\footnotesize There is no fully standardized way of setting and controlling breakpoints on UNIX. The ancient ptrace is typically used for this, through PEEKTEXT/POKETEXT options. Ptrace allows a controlling process to catch the signals from the controlled process when it hits breakpoints.
+
+The original bcov implementation is the base for the Linux implementation, but Alan Somers have more recently extracted the OS-dependent parts and ported Kcov to FreeBSD. On Linux and FreeBSD, libelf and elfutils is used for parsing binaries.
 
 OSX works in an entirently different way though. The key difference between OSX and Linux/FreeBSD is that OSX uses it's own binary format, Mach-O. So we now have Dwarves, Elves and Mach-O. For ELF, we have libelf to do the parsing, but Apple doesn't publish a library for Mach-O. I therefore opted on a simpler solution on OSX. The LLDB debugger comes with the development environment on OSX, and it conveniently offers a nice C++ API.
 
@@ -414,20 +465,7 @@ static long getRegs(pid\_t pid, void *addr, void *regs, size\_t len)
   \end{Example}
 \end{frame}
 
-\begin{frame}{Design}
-  \note{
-    \footnotesize
-    Kcov is written in C++, but unfortunately it's C++03, so a bit unmodern for these kinds of meetings! I'll just shortly discuss the kcov design a bit.
-
-The design revolves around a set of abstract interfaces, as show on the figure and through heavy use of the observer pattern. Binary files are parsed via the IFileParser interface. Binary execution is handled through the IEngine interface, and output is handled via the IWriter interface.
-
-Control is handled through the collector, which receives file/line to address mappings from the file parser. The collector will then set breakpoints, execute the program, and collect breakpoint hits through the engine. The reporter receives and memorizes executed lines and reports them to the writers, which produces the output. Pretty simple, don't you think?
-
-The design was originally made to accomodate ELF and ptrace, and the only true File parser is the Elf parser. When kcov is used with Python, bash or indeed on OSX via LLDB, parsing and execution is kept together, so these implement both the engine and the file parser interfaces.}
-  \includegraphics[width=\linewidth]{design}
-\end{frame}
-
-\subsection{ELF/Dwarf implementation quirks}
+\subsection{Implementation quirks and bugs}
 \begin{frame}{So are there any interesting bugs?}
   \note{So are there any interesting bugs affecting kcov?}
   \includegraphics[width=\linewidth]{sq_slotmachine}
@@ -467,6 +505,58 @@ The design was originally made to accomodate ELF and ptrace, and the only true F
   % When a process stops, you need to dump the register file and find the PC. This is
   % architecture and OS dependent
 
+\begin{frame}[fragile]{LLDB and fork}
+  \note{The OSX port has a completely different set of problems. The
+    most interesting one is perhaps handling of forks.
+
+    As many of you probably know, forking on UNIX means creating a new
+    process, which is identical to it's parent through a weird system
+    call which returns different values in the parent and child
+    process.
+
+    Now, as we saw before, setting a breakpoint means modifying the
+    instructions in memory. When a breakpoint is hit, the controlling
+    process (the LLDB debugger in this case) is signalled and can take
+    action. However, LLDB doesn't actually attach to children as they
+    are created via fork. So a breakpoint hit in the child will
+    instead crash the process!
+
+    NEXT. So how can we workaround this in kcov?
+
+    Well, the workaround only goes half-way, since it doesn't cover
+    the forked child just yet, but at least the program doesn't
+    crash. What kcov does is to set a special breakpoint at fork, and
+    when a fork happens, it will disable all breakpoints. After that,
+    it will set a temporary breakpoint at the point where the parent
+    returns and let the program continue.
+
+    When the parent returns again, it will hit the temporary
+    breakpoint and all breakpoints can be enabled again. This is
+    really a LLDB bug, which GDB doesn't have through it's follow-fork-mode.}
+  \begin{itemize}
+  \item The OSX port has another interesting quirk: forks are unsafe
+  \item LLDB doesn't catch breakpoints from children, and will
+    therefore crash in the child after a fork
+  \item<2-> How can we workaround that?
+  \end{itemize}
+  \begin{Example}
+    \begin{semiverbatim}
+      \scriptsize
+auto child = fork();
+if (child < 0)
+      printf("Error\\n");
+else if (child == 0)
+      printf("In child\\n"); // Breakpoint here is bad news!
+else
+\{
+      printf("In parent, child \%d\\n", child);
+      wait(&status);
+\}
+    \end{semiverbatim}
+  \end{Example}
+\end{frame}
+
+
 \subsection{Python and Bash coverage collection}
 
 \begin{frame}{So how does Python and Bash work?}
@@ -481,8 +571,19 @@ The design was originally made to accomodate ELF and ptrace, and the only true F
   \end{itemize}
 \end{frame}
 
-\subsection{System mode}
-\begin{frame}{System mode}
+\subsection{The design of kcov}
+
+\begin{frame}{Design}
+  \note{
+    \footnotesize
+    Kcov is written in C++, but unfortunately it's C++03, so a bit unmodern for these kinds of meetings! I'll just shortly discuss the kcov design a bit.
+
+The design revolves around a set of abstract interfaces, as show on the figure and through heavy use of the observer pattern. Binary files are parsed via the IFileParser interface. Binary execution is handled through the IEngine interface, and output is handled via the IWriter interface.
+
+Control is handled through the collector, which receives file/line to address mappings from the file parser. The collector will then set breakpoints, execute the program, and collect breakpoint hits through the engine. The reporter receives and memorizes executed lines and reports them to the writers, which produces the output. Pretty simple, don't you think?
+
+The design was originally made to accomodate ELF and ptrace, and the only true File parser is the Elf parser. When kcov is used with Python, bash or indeed on OSX via LLDB, parsing and execution is kept together, so these implement both the engine and the file parser interfaces.}
+  \includegraphics[width=\linewidth]{design}
 \end{frame}
 
 \begin{frame}{Questions and comments!}
