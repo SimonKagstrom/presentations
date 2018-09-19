@@ -85,7 +85,7 @@ So let's get started!}
   \item Programming is hard!
   \item To improve software quality, good tooling and methodology is important
   \end{itemize}
-  \includegraphics<1>[width=\linewidth]{sq_skull_jarring}
+  \includegraphics[width=\linewidth]{sq_skull_jarring}
 \end{frame}
 
 \begin{frame}{Outline}
@@ -139,9 +139,7 @@ So let's get started!}
 \begin{frame}[fragile]{Problems with traditional tools}
   \note{On UNIX, the traditional way of collecting code coverage has been to use gcov for collection, and lcov for HTML presentation, if desired. The process is a bit cumbersome, as can be seen in the example below. You first need a special --coverage option, which produces extra metadata files in the build directory. After running the program, you then get data for the actual execution in the build directory.
 
-    After this, you need to run the presentation tool, like lcov, to get actual output. If the process crashes during execution, you will lose the coverage output altogether. Gcov also doesn't gather code coverage from shared libraries.
-
-    Fortunately, using kcov does away with all these disadvantages, allowing collection without special compiler options, reporting without droppings and all done in a single step. Quite a sales pitch, don't you agree? We should note here that there are other collection methods, for example via clang and obviously a set of commercial tools.}
+    After this, you need to run the presentation tool, like lcov, to get actual output. If the process crashes during execution, you will lose the coverage output altogether. Gcov also doesn't gather code coverage from shared libraries.}
   \begin{itemize}
   \item gcov + lcov is a multi-step process
   \item gcov leaves droppings after compilation/running
@@ -159,6 +157,12 @@ So let's get started!}
     \end{semiverbatim}
   \end{Example}
 \end{frame}
+
+\begin{frame}{Instead...}
+  \note{Fortunately, using kcov does away with all these disadvantages, allowing collection without special compiler options, reporting without droppings and all done in a single step. Quite a sales pitch, don't you agree? We should note here that there are other collection methods, for example via clang and obviously a set of commercial tools.}
+  \includegraphics[width=\linewidth]{sq_ship_sales}
+\end{frame}
+
 
 \section{Kcov usage}
 \subsection{Kcov overview}
@@ -178,8 +182,8 @@ So let's get started!}
 
     Guess the name! The original idea I had was to use kernel kprobes,
     which allows setting breakpoints on kernel code, while still
-    retaining the userspace functionality. K therfore stands for
-    kernel. The kernel functionality via kpropbes never worked very
+    retaining the userspace functionality. K therefore stands for
+    kernel. The kernel functionality via kprobes never worked very
     well though.
 
     Confusingly, there is now a kcov for the kernel. The kernel kcov
@@ -187,6 +191,80 @@ So let's get started!}
 \end{frame}
 
 \subsection{Main features of kcov}
+
+\begin{frame}{Main features of kcov}
+  \begin{itemize}
+  \item Supports collection and reporting of binaries as long as debug information is present
+  \item Automatically collects coverage from shared libraries
+    \begin{itemize}
+      \item Both linked into the binary, and opened via \textbf{dlopen}
+    \end{itemize}
+  \item Collection and reporting is done in a single step
+  \item Generates HTML output as well as several XML formats for integration in other environments
+  \item Accumulates coverage information between runs
+  \item Automatically merges multiple binaries into a combined report
+    \begin{itemize}
+      \item Merging of multiple reports can also be done by the tool
+    \end{itemize}
+  \item Works on Linux, FreeBSD and Mac OSX on x86, ARM and PowerPC
+  \end{itemize}
+
+  \note{This slide lists the main features of kcov. As I noted before,
+    as long as you build with debug information, kcov has everything
+    it needs for instrumentation. Optimized binaries can also be
+    instrumented, but just like when debugging, this can sometimes
+    give surprising results.
+
+    Kcov also automatically detects shared libraries and instrument
+    them, both from compile time and loaded during runtime.
+
+    Unlike gcov+lcov, collection and reporting is done in the same
+    command although kcov supports separating them if you collect
+    coverage data from a target system where the source code isn't
+    present. Output is both in HTML and various XML and Json formats
+    to allow integration with external tools. More on that on the next
+    slide.
+
+    When you run the same binary multiple times, kcov will accumulate
+    the coverage data as long as the binary hasn't changed. Similarly,
+    when collecting from multiple binaries with the same output
+    directory, kcov will create a merged report with the sources from
+    all binaries.
+  }
+\end{frame}
+
+\subsection{Integration with CI systems}
+\begin{frame}{Integration with CI systems}
+  \note{Kcov also integrates with several systems and sites for continous integration. Jenkins has a plugin for Cobertura, normally a Java code coverage collection tool. As kcov produces XML output for Cobertura, it's easy to integrate in that environment. SonarQube is handled in a similar way.
+
+ It also supports some popular cloud services. NEXT. It can upload directly to coveralls, which is often used together with travis-ci. Coveralls is an easy way to get fancy web stats for your project coverage. NEXT. Similarly, codecov.io is also easy to integrate, but supports kcov directly from the upstream project.
+
+Personally, I haven't picked a favourite cloud coverage service just yet, but instead use both with travis-ci and added dual badges on github.
+  }
+  \begin{itemize}
+  \item Jenkins and SonarQube output is generated by kcov
+  \item \textcolor<2>{red}{Uploading to Coveralls.io is built-in}
+  \item \textcolor<3>{red}{Uploading to Codecov.io is supported by the upstream project}
+  \end{itemize}
+  \includegraphics<1-2>[height=6cm]{coveralls}
+  \includegraphics<3>[height=6cm]{codecov}
+\end{frame}
+
+\subsection{Python/Bash}
+\begin{frame}{Python and Bash code coverage}
+  \note{Kcov also supports Python and Bash coverage
+    collection. Judging by the number of reported github issues, Bash
+    coverage collection is surprisingly popular. Or the kcov
+    implementation is just buggy!
+  }
+  \begin{itemize}
+  \item Kcov can also collect coverage for Python and Bash
+  \item For Bash and Python, line counts are reported
+  \end{itemize}
+
+  \includegraphics[width=7cm]{bash}\includegraphics[width=5cm]{python}
+\end{frame}
+
 \begin{frame}{Interactive Demo!}
   \note{
       \begin{itemize}
@@ -213,33 +291,6 @@ So let's get started!}
       \item Discuss --collect-only, --report-only
     \end{itemize}
   }
-\end{frame}
-
-\subsection{Integration with CI systems}
-\begin{frame}{Integration with CI systems}
-  \note{Kcov also integrates with several systems and sites for continous integration. Jenkins has a plugin for Cobertura, normally a Java code coverage collection tool. As kcov produces XML output for Cobertura, it's easy to integrate in that environment. SonarQube is handled in a similar way.
-
- It also supports some popular cloud services. NEXT. It can upload directly to coveralls, which is often used together with travis-ci. Coveralls is an easy way to get fancy web stats for your project coverage. NEXT. Similarly, codecov.io is also easy to integrate, but supports kcov directly from the upstream project.
-
-Personally, I haven't picked a favourite cloud coverage service just yet, but instead use both with travis-ci and added dual badges on github.
-  }
-  \begin{itemize}
-  \item Jenkins and SonarQube output is generated by kcov
-  \item \textcolor<2>{red}{Uploading to Coveralls.io is built-in}
-  \item \textcolor<3>{red}{Uploading to Codecov.io is supported by the upstream project}
-  \end{itemize}
-  \includegraphics<1-2>[height=6cm]{coveralls}
-  \includegraphics<3>[height=6cm]{codecov}
-\end{frame}
-
-\subsection{Python/Bash}
-\begin{frame}{Python and Bash code coverage}
-  \note{Judging by the number of reported github issues, Bash coverage collection is surprisingly popular. Or the kcov implementation is just buggy!}
-  \begin{itemize}
-    \item Kcov can also collect coverage for Python and Bash
-  \end{itemize}
-
-  \includegraphics[width=7cm]{bash}\includegraphics[width=5cm]{python}
 \end{frame}
 
 \section{How kcov works}
@@ -329,6 +380,8 @@ OSX works in an entirently different way though. The key difference between OSX 
 So on OSX, the entire parsing, process control and breakpoint setting is only 486 lines of code. The disadvantage with the LLDB implementation is that it's significantly slower than using regular ptrace. During normal debugging, you typically don't set tens of thousands of breakpoints!
 
 Ptrace is quite messy to work with. The code snippet shown is for dumping the register file when the program stops at a breakpoint. As you can see, it's not standardized between architectures, not to mention between OSes. When you have the registers, kcov needs to know the program counter, which is one of the entries in the register file. Obviously in different positions on different architectures! The easiest way to find it has been to look in GDB or the Linux kernel source code.
+
+% Not automatically portable
   }
     \begin{itemize}
     \item ptrace is a truly archaic interface, and pretty non-portable
