@@ -280,13 +280,9 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 
       \item Remove /tmp/kcov. All output is placed in the out-directory, so this cleans up everything from the coverage run
 
-      \item Run again with --include-pattern
-
-      \item Run calc, show merged report
-
       \item Run kcov with --include-pattern, note that --exclude-pattern and paths also exist
 
-      \item Run kcov on another program (calc?), show that output is merged
+      \item Run kcov unit tests, show merged report
 
       \item Discuss --collect-only, --report-only
     \end{itemize}
@@ -298,9 +294,9 @@ Personally, I haven't picked a favourite cloud coverage service just yet, but in
 
 \subsection{Elves, dwarves and breakpoints}
 \begin{frame}{Dwarf stabs Mach-O Elf}
-  \note{\footnotesize Lets start with an overview of technologies used by
-    kcov. Binaries in Linux are nowadays almost always stored in the
-    ELF binary format. ELF binaries contain sections which contain
+  \note{\footnotesize Lets start with an overview of technologies used
+    by kcov. Binaries in Linux are nowadays almost always stored in
+    the ELF binary format. ELF binaries contain sections which contain
     code, data, constants, relocation information and so on. Where
     relevant, the sections contain a memory address where the code or
     data is loaded into memory during execution.
@@ -487,6 +483,12 @@ The design was originally made to accomodate ELF and ptrace, and the only true F
 
 \subsection{System mode}
 \begin{frame}{System mode}
+\end{frame}
+
+\begin{frame}{Questions and comments!}
+  \footnotesize
+  (Images from \url{http://www.falselogic.net/LetsPlay/SpaceQuest.html})
+  \includegraphics[width=\linewidth]{sq_final}
 \end{frame}
 
 \end{document}
