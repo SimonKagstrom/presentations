@@ -19,8 +19,8 @@
   \end{frame}
 }
 
-\title[Kcov - a single-step code coverage tool] %optional
-{Kcov - a single-step code coverage tool}
+\title[What's in a binary?] %optional
+{What's in a binary?}
 
 %\subtitle{A short story}
 
@@ -43,6 +43,17 @@
 So let's get started!}
 \end{frame}
 
+
+\begin{frame}{Background}
+  \begin{itemize}
+    \item I have a few themes that I often return to in my projects
+    \item During the years, I've multiple times had to rely on disassembly for debugging
+    \item Objdump output is cumbersome to navigate through
+    \item<2> I wanted a graphical application that allows easier navigation
+  \end{itemize}
+\end{frame}
+
+
 \begin{frame}
   \frametitle{Demo}
   \note<1->{
@@ -51,14 +62,10 @@ So let's get started!}
 
   \note<2>{
   }
+  \includegraphics[width=\linewidth]{sq_keypad}
   % Start the app. Show symbols, cross-reference, 
   %\includegraphics<1>[height=8cm]{goto_fail_no_coverage}
   %\includegraphics<2>[height=8cm]{goto_fail}
-\end{frame}
-
-
-\begin{frame}{Background}
-    % One of my oft repeated implementation projects
 \end{frame}
 
 \begin{frame}{Binary formats}
@@ -66,6 +73,19 @@ So let's get started!}
     % Mach-O
     % PE
     % The three rules for an instruction set architect
+    \note{
+      The job description for an instruction set architect
+      \begin{itemize}
+        \item You should create an instruction set which consists of abbreviations of
+        common words for no particular reason. Bonus point for using unclear meanings
+        (for example MOV, which is an abbreviation of "move", but actually copies the
+        value)
+        \item Your instruction set should be basically MIPS, but with a few improvements.
+        Sometimes "improvements".
+        \item Your instruction set should contain at least one funny sounding instruction.
+        Case in point: EIEIO.
+      \end{itemize}
+    }
 \end{frame}
 
 \begin{frame}{Actors and objects}
