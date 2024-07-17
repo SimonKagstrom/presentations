@@ -69,11 +69,19 @@ So let's get started!}
 \end{frame}
 
 \begin{frame}{Binary formats}
+  \begin{itemize}
+    \item \textbf{Linux/FreeBSD} etc: ELF
+    \item \textbf{MacOS}: Mach-O
+    \item \textbf{Windows}: PE
+  \end{itemize}
     % ELF + DWARF
     % Mach-O
     % PE
     % The three rules for an instruction set architect
     \note{
+      The binary format is used for executables and linkable object files. These are the
+      three main formats used today.
+
       The job description for an instruction set architect
       \begin{itemize}
         \item You should create an instruction set which consists of abbreviations of
@@ -86,7 +94,11 @@ So let's get started!}
         Case in point: EIEIO.
       \end{itemize}
     }
-\end{frame}
+
+
+
+    \includegraphics[width=7cm]{sq2_computer_room}
+  \end{frame}
 
 \begin{frame}{Actors and objects}
     % Sections, symbols, relocations
