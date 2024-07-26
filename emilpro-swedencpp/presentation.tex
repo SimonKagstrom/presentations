@@ -98,12 +98,28 @@ So let's get started!}
     \includegraphics[width=7cm]{sq2_computer_room}
   \end{frame}
 
-\begin{frame}{Actors and objects}
+  \begin{frame}{Actors and objects}
+    Objects
+    \begin{itemize}
+      \item \textbf{Sections}: Text, data, debug info etc
+      \item \textbf{Symbols}: Functions/methods, variables, ...
+      \item \textbf{Relocations}:
+    \end{itemize}
+    Actors
+    \begin{itemize}
+      \item \textbf{Compiler}
+      \item \textbf{Linker}
+      \item \textbf{Loader}
+      \item \textbf{Disassembler}
+    \end{itemize}
     % What is compiler, linker, loader?
 
     % Sections, symbols, relocations
     % Disassembler, compiler, linker, loader
-    \includegraphics[width=7cm]{compiler_linker}
+\end{frame}
+
+\begin{frame}{Producing a binary}
+  \includegraphics[width=7cm]{compiler_linker}
 \end{frame}
 
 \begin{frame}{Loading a binary}
@@ -116,15 +132,11 @@ So let's get started!}
   \end{itemize}
 
   % Sections, symbols, relocations
+  % Example from embedded system
+  % Load sections into memory
+  % Entry point
   % Disassembler, compiler, linker, loader
   \includegraphics[width=7cm]{loader}
-\end{frame}
-
-
-\begin{frame}{How is a binary started?}
-    % Example from embedded system
-    % Load sections into memory
-    % Entry point
 \end{frame}
 
 \begin{frame}{PIEs}
