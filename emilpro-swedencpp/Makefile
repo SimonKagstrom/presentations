@@ -6,6 +6,7 @@ output/%.png: plantuml/%.pu plantuml/objects.pu
 
 presentation.tex: \
 	output/compiler_linker.png \
+	output/disassembler.png \
 	output/loader.png \
 
 

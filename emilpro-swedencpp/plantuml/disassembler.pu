@@ -1,0 +1,27 @@
+@startuml disassembler
+
+allowmixing
+
+!include objects.pu!objects
+
+object Instruction #Pink
+object Disassembler
+
+usecase "Instruction data" as Data #LightGreen
+usecase "Code boundaries" as SymbolData #LightGreen
+usecase "Call targets" as CallTargets #LightGreen
+
+
+Section --> Data
+Symbol --> SymbolData
+Symbol --> CallTargets
+Relocation --> CallTargets
+
+Data --> Instruction
+
+Instruction --> Disassembler
+SymbolData --> Disassembler
+CallTargets --> Disassembler
+
+
+@enduml
