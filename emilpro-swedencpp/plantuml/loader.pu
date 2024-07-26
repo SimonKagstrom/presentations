@@ -1,0 +1,19 @@
+@startuml loader
+
+!include objects.pu!objects
+
+object "Loader (static executable)" as Static_Loader
+object "Loader (dynamic executable)" as Dynamic_Loader
+object "Loader (PIE)" as PIE_Loader
+
+Section --> Static_Loader
+
+Relocation --> Dynamic_Loader
+Symbol --> Dynamic_Loader
+Section --> Dynamic_Loader
+
+Relocation -Up-> PIE_Loader
+Symbol -Up-> PIE_Loader
+Section -Up-> PIE_Loader
+
+@enduml

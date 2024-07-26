@@ -95,16 +95,31 @@ So let's get started!}
       \end{itemize}
     }
 
-
-
     \includegraphics[width=7cm]{sq2_computer_room}
   \end{frame}
 
 \begin{frame}{Actors and objects}
+    % What is compiler, linker, loader?
+
     % Sections, symbols, relocations
     % Disassembler, compiler, linker, loader
     \includegraphics[width=7cm]{compiler_linker}
 \end{frame}
+
+\begin{frame}{Loading a binary}
+  Different categories of binaries are handled differently:
+  \begin{itemize}
+    \item Execute from direct-mapped flash (embedded systems)
+    \item Static executables
+    \item Dynamic executables
+    \item PIEs (Position-Independent Executables)
+  \end{itemize}
+
+  % Sections, symbols, relocations
+  % Disassembler, compiler, linker, loader
+  \includegraphics[width=7cm]{loader}
+\end{frame}
+
 
 \begin{frame}{How is a binary started?}
     % Example from embedded system
