@@ -1,0 +1,16 @@
+@startuml compiler_linker
+
+!include objects.pu!objects
+
+object Compiler
+object Linker
+
+Compiler --> Relocation
+Compiler --> Symbol
+Compiler --> Section
+
+Relocation --> Linker
+Symbol --> Linker
+Section <--> Linker
+
+@enduml
