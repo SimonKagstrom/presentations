@@ -121,7 +121,11 @@ So let's get started!}
 
 \begin{frame}{Relocations}
   \begin{itemize}
-    \item ...
+    \item If a non-local function is called, an undefined symbol is added
+    \item The compiler adds a relocation entry for the call site
+    \item When linking, the linker will resolve these symbols
+    \item Different types depending on instruction
+    \item Data accesses are handled similarly
   \end{itemize}
 \end{frame}
 
