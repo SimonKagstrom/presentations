@@ -60,8 +60,6 @@ So let's get started!}
     \footnotesize
   }
 
-  \note<2>{
-  }
   \includegraphics[width=\linewidth]{sq_keypad}
   % Start the app. Show symbols, cross-reference, 
   %\includegraphics<1>[height=8cm]{goto_fail_no_coverage}
@@ -119,6 +117,10 @@ So let's get started!}
     % Disassembler, compiler, linker, loader
 \end{frame}
 
+\begin{frame}{Producing a binary}
+  \includegraphics[width=7cm]{compiler_linker}
+\end{frame}
+
 \begin{frame}{Relocations}
   \begin{itemize}
     \item If a non-local function is called, an undefined symbol is added
@@ -127,10 +129,6 @@ So let's get started!}
     \item Different types depending on instruction
     \item Data accesses are handled similarly
   \end{itemize}
-\end{frame}
-
-\begin{frame}{Producing a binary}
-  \includegraphics[width=7cm]{compiler_linker}
 \end{frame}
 
 \begin{frame}{Loading a binary}
@@ -156,16 +154,25 @@ So let's get started!}
 \end{frame}
 
 \begin{frame}{How to write a dissassembler?}
+  
     %libbfd
     %capstone
     %qt
-    % Newton: "If I hadn't been standing on the shoulders of giants, I wouldn't have reached the apple."
+    \note{
+      Newton: "If I hadn't been standing on the shoulders of giants, I wouldn't have reached the apple."
+    }
+
+    %
     \includegraphics[width=7cm]{disassembler}
 \end{frame}
 
 \begin{frame}{libbfd}
     %Example from documentation
-\end{frame}
+
+    \note{
+      libbfd is part of binutils, so is shipped with the linker.
+    }
+  \end{frame}
 
 \begin{frame}{Implementation}
     %PlantUML
