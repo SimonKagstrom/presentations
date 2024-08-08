@@ -1,0 +1,28 @@
+@startuml
+
+allowmixing
+
+object capstone #pink
+object libbfd #pink
+object AppLogic #LightGreen
+
+
+class Symbol
+class Section
+class Relocation
+class Instruction
+
+
+libbfd --> Symbol
+libbfd --> Section
+libbfd --> Relocation
+
+Section --> capstone
+capstone --> Instruction
+
+Symbol --> AppLogic
+Instruction --> AppLogic
+Relocation --> AppLogic
+Section --> AppLogic
+
+@enduml

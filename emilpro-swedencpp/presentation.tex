@@ -154,16 +154,30 @@ So let's get started!}
 \end{frame}
 
 \begin{frame}{How to write a dissassembler?}
-  
-    %libbfd
-    %capstone
-    %qt
-    \note{
-      Newton: "If I hadn't been standing on the shoulders of giants, I wouldn't have reached the apple."
-    }
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      I did not write everything from scratch!
 
-    %
-    \includegraphics[width=7cm]{disassembler}
+      \begin{itemize}
+        \item \textbf{libbfd}: Part of binutils, used for reading binary files
+        \item \textbf{capstone}: Disassembler library
+        \item \textbf{Qt}: GUI framework
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \includegraphics[width=5cm]{emilpro_structure}
+    \end{column}
+  \end{columns}
+  \note{
+    I didn't write everything from scratch.
+
+    It's like Newton said: "If I hadn't been standing on the shoulders of giants, I wouldn't have reached
+    the apple."
+
+    The three main building stones are Qt, the GUI framework, libbfd and capstone. libbfd reads binary files
+    to gather symbols, relocations and instruction data which the disassembler then picks up. The sectiond
+    data, for text sections are then fed to capstone, which disassembles it into instructions.
+  }
 \end{frame}
 
 \begin{frame}{libbfd}
