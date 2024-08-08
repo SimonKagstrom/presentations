@@ -108,7 +108,7 @@ So let's get started!}
     \begin{itemize}
       \item \textbf{Sections}: Text, data, debug info etc
       \item \textbf{Symbols}: Functions/methods, variables, ...
-      \item \textbf{Relocations}: 
+      \item \textbf{Relocations}: Call sites for later resolving
     \end{itemize}
     % What is compiler, linker, loader?
     % Show in emilpro
@@ -118,7 +118,14 @@ So let's get started!}
 \end{frame}
 
 \begin{frame}{Producing a binary}
-  \includegraphics[width=7cm]{compiler_linker}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      The compiler produces symbols, relocations plus data and text sections
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \includegraphics[width=5cm]{compiler_linker}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Relocations}
