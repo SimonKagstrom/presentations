@@ -134,7 +134,6 @@ So let's get started!}
     \item The compiler adds a relocation entry for the call site
     \item When linking, the linker will resolve these symbols
     \item Different types depending on instruction
-    \item Data accesses are handled similarly
   \end{itemize}
 \end{frame}
 
@@ -153,6 +152,19 @@ So let's get started!}
   % Entry point
   % Disassembler, compiler, linker, loader
   \includegraphics[width=7cm]{loader}
+\end{frame}
+
+\begin{frame}{Static executables}
+\end{frame}
+
+\begin{frame}{Dynamic executables}
+  % Global offset table (for global data, ignored here)
+  % Procedure linkage table (for function calls)
+  % Relocation entries are for the PLT, not the call sites
+  % - when a function is called, it's called through the PLT
+  % - the relocated PLT jumps to the function in the shared library
+  % - at least Linux handles PLT resolving lazily, i.e., only when the
+  %   function is called
 \end{frame}
 
 \begin{frame}{PIEs}
@@ -212,9 +224,13 @@ So let's get started!}
 
 
 \begin{frame}{Questions and comments!}
-  \footnotesize
-  (Images from \url{http://www.falselogic.net/LetsPlay/SpaceQuest.html})
   \includegraphics[width=\linewidth]{sq_final}
+
+  \footnotesize
+  Images from \url{http://www.falselogic.net/LetsPlay/SpaceQuest.html}
+
+  Ian Lance Taylors linker series is the source of parts of this talk
+  \url{https://www.airs.com/blog/index.php?s=Linkers}
 \end{frame}
 
 \end{document}
