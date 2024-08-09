@@ -38,19 +38,55 @@
 
 \begin{frame}
   \titlepage
-  \note{My name is Simon Kågström and I work as a consultant, currently at Profoto. Tonight I will present emilpro.
-
-So let's get started!}
+  \note{
+    My name is Simon Kågström and I work as a consultant, currently at Profoto. Tonight I will present
+    emilpro, which is a graphical disassembler.
+  }
 \end{frame}
+
 
 
 \begin{frame}{Background}
   \begin{itemize}
     \item I have a few themes that I often return to in my projects
+    \item One of these is disassembly
+  \end{itemize}
+  \note{
+    I don't know about you, but at least I tend to return to a few themes over and over again.
+    These projects are never finished, and rarely really working, but they are fun to work on.
+
+    For some of these, I've done multiple reimplementations, and the topic of this talk is one
+    of them. This is actually the third implementation, the first one was started almost 20 years ago
+    now as a Python application called Dissy. You get a sense of how old I am now, I guess!
+
+    That one really just parsed objdump output, so after a few years I thought I could do better,
+    and rewrite it in C++ and use libraries for the parsing instead. So a bit over 10 years ago, I
+    rewrote it as "emilpro", which is a pun on IDA pro which at least then was the state of the art.
+
+    It was sort of working, but bitrotted and a few years later it wasn't even possible to compile
+    anymore. But when I again needed disassembly this year, I thought I'd just rewrite it again
+    and that's the topic of this talk. The third implementation now, and counting!
+  }
+\end{frame}
+
+
+\begin{frame}{Motivation}
+  \begin{itemize}
     \item During the years, I've multiple times had to rely on disassembly for debugging
     \item Objdump output is cumbersome to navigate through
-    \item<2> I wanted a graphical application that allows easier navigation
+    \item I wanted a graphical application that allows easier navigation
   \end{itemize}
+  \note{
+    I've during my career, although mostly for non-work related tasks, multiple times had to rely on
+    diassembly for debugging and understanding how things work while working on low-level stuff.
+    In some instances, I had no way of debugging the code, but could get backtraces with addresses.
+    The disassembly was then the only way to figure out what was going on. Back in the days, I was
+    also writing a lot of inline assembly, and side effects of that is easy to get almost correct,
+    so that it breaks in subtle ways when more complex code is used.
+
+    Using plain Objdump for this is very cumbersome, so I wanted an easier way to navigate the
+    disassembly.
+  }
 \end{frame}
 
 
@@ -155,6 +191,7 @@ So let's get started!}
 \end{frame}
 
 \begin{frame}{Static executables}
+
 \end{frame}
 
 \begin{frame}{Dynamic executables}
