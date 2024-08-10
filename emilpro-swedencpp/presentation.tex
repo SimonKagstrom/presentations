@@ -92,8 +92,8 @@
 
 \begin{frame}
   \frametitle{Demo}
-  \note<1->{
-    \footnotesize
+  \note{
+    I'll start with a small demo of the application.
   }
 
   \includegraphics[width=\linewidth]{sq_keypad}
@@ -114,7 +114,17 @@
     % The three rules for an instruction set architect
     \note{
       The binary format is used for executables and linkable object files. These are the
-      three main formats used today.
+      three probably most commonly used formats today.
+
+      ELF is used for Linux, FreeBSD and others, but also as an intermediate format for a
+      lot of embedded systems. MacOS uses the Mach-O format, from the Mach microkernel. You'll
+      notice here that the binary format engineers have a sense of humor, and you also have
+      the DWARF debugging format to go with ELF and also Mach-O. If you invent a new format,
+      I'd suggest ORC as a name.
+
+      The execption to the funniness is Windows, which simply calls their format pee.
+
+      I believe MS-DOS uses the COFF format.
 
       The job description for an instruction set architect
       \begin{itemize}
