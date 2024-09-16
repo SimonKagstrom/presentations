@@ -160,6 +160,7 @@
     \end{itemize}
     Objects
     \begin{itemize}
+      \item \textbf{Instructions}: The actual code
       \item \textbf{Sections}: Text, data, debug info etc
       \item \textbf{Symbols}: Functions/methods, variables, ...
       \item \textbf{Relocations}: Call sites for later resolving
@@ -180,6 +181,7 @@
       \includegraphics[width=5cm]{compiler_linker}
     \end{column}
   \end{columns}
+  % Sumbol example from ELF (dump reloc)
 \end{frame}
 
 \begin{frame}{Relocations}
@@ -189,6 +191,8 @@
     \item When linking, the linker will resolve these symbols
     \item Different types depending on instruction
   \end{itemize}
+
+  % Example from ELF (dump reloc)
 \end{frame}
 
 \begin{frame}{Loading a binary}
@@ -269,12 +273,40 @@
 \end{frame}
 
 \begin{frame}{Why is this easier now than 10 years ago?}
-    %move from binutils
-    %c++11+
-    %conan
-    %copilot
+  %move from binutils
+  %c++11+
+  %conan
+  %copilot
 \end{frame}
 
+\begin{frame}{Conan}
+  \begin{itemize}
+    \item The main reason for my previous failure was the libbfd rebuild
+  \end{itemize}
+  %copilot
+\end{frame}
+
+
+\begin{frame}{C++17 and beyond}
+  \begin{itemize}
+    \item The previous implementation was done just around the C++11 introduction, but used C++03
+    \item Now C++20, so much better!
+
+    % Example from the code
+    % span
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{AI}
+  \begin{itemize}
+    \item I use Github copilot
+  \end{itemize}
+  % Unit test example (drawing, ugly)
+  % LaTeX example (bad)
+  % Qt example (good)
+  %copilot
+
+\end{frame}
 
 
 
@@ -282,6 +314,9 @@
   \includegraphics[width=\linewidth]{sq_final}
 
   \footnotesize
+  First I have a teaser for my next talk. Do we have any people living or working in
+  Uppsala here? Do you know that you live in the edge case?
+
   Images from \url{http://www.falselogic.net/LetsPlay/SpaceQuest.html}
 
   Ian Lance Taylors linker series is the source of parts of this talk
