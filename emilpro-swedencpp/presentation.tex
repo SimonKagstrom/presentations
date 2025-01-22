@@ -295,28 +295,38 @@
     \includegraphics<2>[height=4cm]{spam}
 \end{frame}
 
-\begin{frame}{Why is this easier now than 10 years ago?}
+\begin{frame}{Part III: Why is this easier now than 10 years ago?}
   %move from binutils
   %c++11+
   %conan
   %copilot
 \end{frame}
 
-\begin{frame}{Conan}
+
+\begin{frame}{Bad design decisions in the original project}
   \begin{itemize}
-    \item The main reason for my previous failure was the libbfd rebuild
+    \item libbfd for disassembly: the multiarch-dev issue
+    \item feature creep: core functionality sketchy, work on irrelevant features
   \end{itemize}
-  %copilot
+
+  % built my own binutils. Bitrot and was unbuildable later
 \end{frame}
 
-
-\begin{frame}{C++17 and beyond}
+\begin{frame}{C++20 and infrastructure}
   \begin{itemize}
     \item The previous implementation was done just around the C++11 introduction, but used C++03
-    \item Now C++20, so much better!
+    \item Now C++23, so much better!
+    \item Conan
 
-    % Example from the code
-    % span
+    % example of c++03 vs c++23
+
+    % binutils
+
+    % The main reason for my previous failure was the libbfd rebuild
+    % conan allows newer versions than in the distribution, and the same between os:es.
+    % maybe not so good for distributions though.
+
+    % Conan libiberty helps with MacOS libbfd linking.
   \end{itemize}
 \end{frame}
 
