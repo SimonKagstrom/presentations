@@ -89,6 +89,9 @@
     \end{itemize}
   \end{frame}
 
+\begin{frame}{Part I: Motivation}
+\end{frame}
+
 \begin{frame}{Motivation}
   \begin{itemize}
     \item During the years, I've multiple times had to rely on disassembly for debugging
@@ -106,6 +109,10 @@
     Using plain Objdump for this is very cumbersome, so I wanted an easier way to navigate the
     disassembly.
   }
+\end{frame}
+
+
+\begin{frame}{Part II: What is needed for a disassembler?}
 \end{frame}
 
 
@@ -148,6 +155,34 @@
 
     \includegraphics[width=7cm]{sq2_computer_room}
   \end{frame}
+
+
+\begin{frame}{How to write a dissassembler?}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      I did not write everything from scratch!
+
+      \begin{itemize}
+        \item \textbf{libbfd}: Part of binutils, used for reading binary files
+        \item \textbf{capstone}: Disassembler library
+        \item \textbf{Qt}: GUI framework
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \includegraphics[width=5cm]{emilpro_structure}
+    \end{column}
+  \end{columns}
+  \note{
+    I didn't write everything from scratch.
+
+    It's like Newton said: "If I hadn't been standing on the shoulders of giants, I wouldn't have reached
+    the apple."
+
+    The three main building stones are Qt, the GUI framework, libbfd and capstone. libbfd reads binary files
+    to gather symbols, relocations and instruction data which the disassembler then picks up. The sectiond
+    data, for text sections are then fed to capstone, which disassembles it into instructions.
+  }
+\end{frame}
 
   \begin{frame}{Loading a binary}
     \includegraphics[width=8cm]{elf_background}
@@ -254,33 +289,6 @@
     % Why are they needed?
 \end{frame}
 
-\begin{frame}{How to write a dissassembler?}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      I did not write everything from scratch!
-
-      \begin{itemize}
-        \item \textbf{libbfd}: Part of binutils, used for reading binary files
-        \item \textbf{capstone}: Disassembler library
-        \item \textbf{Qt}: GUI framework
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \includegraphics[width=5cm]{emilpro_structure}
-    \end{column}
-  \end{columns}
-  \note{
-    I didn't write everything from scratch.
-
-    It's like Newton said: "If I hadn't been standing on the shoulders of giants, I wouldn't have reached
-    the apple."
-
-    The three main building stones are Qt, the GUI framework, libbfd and capstone. libbfd reads binary files
-    to gather symbols, relocations and instruction data which the disassembler then picks up. The sectiond
-    data, for text sections are then fed to capstone, which disassembles it into instructions.
-  }
-\end{frame}
-
 \begin{frame}{libbfd}
     %Example from documentation
 
@@ -288,12 +296,6 @@
       libbfd is part of binutils, so is shipped with the linker.
     }
   \end{frame}
-
-\begin{frame}{Implementation}
-    %PlantUML
-    Span, span span
-    \includegraphics<2>[height=4cm]{spam}
-\end{frame}
 
 \begin{frame}{Part III: Why is this easier now than 10 years ago?}
   %move from binutils
@@ -347,14 +349,15 @@
 \begin{frame}{Questions and comments!}
   \includegraphics[width=\linewidth]{sq_final}
 
-  \footnotesize
-  First I have a teaser for my next talk. Do we have any people living or working in
-  Uppsala here? Do you know that you live in the edge case?
-
   Images from \url{http://www.falselogic.net/LetsPlay/SpaceQuest.html}
 
   Ian Lance Taylors linker series is the source of parts of this talk
   \url{https://www.airs.com/blog/index.php?s=Linkers}
+
+  \note{
+  First I have a teaser for my next talk. Do we have any people living or working in
+  Uppsala here? Do you know that you live in the edge case?
+  }
 \end{frame}
 
 \end{document}
