@@ -92,25 +92,63 @@
 \begin{frame}{Part I: Motivation}
 \end{frame}
 
-\begin{frame}{Motivation}
+\begin{frame}[fragile]{Motivation}
   \begin{itemize}
-    \item During the years, I've multiple times had to rely on disassembly for debugging
-    \item Objdump output is cumbersome to navigate through
-    \item I wanted a graphical application that allows easier navigation
+    \item C/C++ with inline assembly
+    \item Systems and programming environments where a debugger wasn't available
   \end{itemize}
+  \begin{Example}
+    \begin{semiverbatim}
+      \scriptsize
+\#define \_syscall1(type,name,atype,a) type name(atype a) \{
+        unsigned long out;
+        \_\_asm\_\_ volatile (
+        ".set  push\\n.set  noreorder\\n"
+        ".short 0xfefe\\n"
+        ".short \%1\\n"
+        ".pushsection .cibylstrtab, \\"aS\\"\\n"
+        "1: .asciz \\"" \#name "\\"\\n"
+        ".popsection\\n"
+        ".long 1b\\n"
+        ".set\\tpop\\n"
+        "move \%[out], \$2\\n
+        : [out]"=d" (out)
+        : "r"(a)
+        : "memory", "\$2"
+        );
+        return (type) out;
+\}
+    \end{semiverbatim}
+  \end{Example}
+
   \note{
     I've during my career, although mostly for non-work related tasks, multiple times had to rely on
     diassembly for debugging and understanding how things work while working on low-level stuff.
-    In some instances, I had no way of debugging the code, but could get backtraces with addresses.
-    The disassembly was then the only way to figure out what was going on. Back in the days, I was
-    also writing a lot of inline assembly, and side effects of that is easy to get almost correct,
-    so that it breaks in subtle ways when more complex code is used.
 
-    Using plain Objdump for this is very cumbersome, so I wanted an easier way to navigate the
-    disassembly.
+    Back in the days, I was also writing a lot of inline assembly, and side effects of that is easy
+    to get almost correct, so that it breaks in subtle ways when more complex code is used. If you've
+    used GCC inline assembly, you'll know that it's quite powerful but it's very important to correctly
+    specify input, output correct, as well as side-effects, which are known as clobbered. I had to
+    look the word up by the way, and clobbered means "to hit someone or something hard and repeatedly".
+    That summarizes GCC inline assembly well, I think!
+
+    In some instances, I had no way of debugging the code, but could get backtraces and register dumps.
+    The disassembly was then the only way to figure out what was going on.
   }
 \end{frame}
 
+\begin{frame}{Backstory}
+  \begin{itemize}
+    \item Objdump output is cumbersome to navigate through
+    \item I wanted a graphical application that allows easier navigation
+  \end{itemize}
+  \includegraphics[width=4.5cm]{dissy-with-instruction-box-600}
+  \includegraphics[width=6cm]{old_emilpro}
+  \note{
+  Using plain Objdump for this is very cumbersome, so I wanted an easier way to navigate the
+  disassembly.
+}
+\end{frame}
 
 \begin{frame}{Part II: What is needed for a disassembler?}
 \end{frame}
