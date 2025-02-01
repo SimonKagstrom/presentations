@@ -225,13 +225,34 @@
 \begin{frame}{Loading a binary}
   \includegraphics[width=8cm]{elf_background}
   \note{
-    So let's say you have a file with the ELF magic. How do you go about to get the
-    instructions out of it? The vertical and horizontal views are both of the same file.
+    So let's say you have a file with the ELF magic. How do you go about to get the instructions 
+    out of it? The vertical and horizontal views are both of the same file, but I use the vertical one
+    to illustrate the raw data in the file, and the horizontal to display data structures.
+
+    Basic ELF is actually fairly simple to write a parser for. However, the devil is in the
+    details, but libbfd helps a lot with that.
   }
 \end{frame}
 
 \begin{frame}{Loading a binary, sections}
   \includegraphics[width=8cm]{elf_sections}
+
+  \note{
+    The sections are the basic building blocks of the ELF file, and similar concepts are also present for
+    other binary formats. It's the first thing we need to find our instructions, and if that was the only
+    goal we could basically stop here.
+
+    The ELF file contains section headers, which can be used to find where the actual section data is in
+    the file, i.e., at which file offset the section data begins. It also contains a name, via the string
+    table, and some flags to indicate what type of section it is.
+
+    Not all sections are loaded into memory (e.g., debug information), but for those that are, the memory
+    address of the section is also present. These days, a lot of code is position-independent, so that
+    might not be relevant.
+
+    So, although we could just read the data we just found (indicated via the blue box) and disassemble
+    it, it would only give us raw instructions with little less information.
+  }
 \end{frame}
 
 \begin{frame}{Loading a binary, symbols}
