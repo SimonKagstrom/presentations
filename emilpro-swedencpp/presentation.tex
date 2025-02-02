@@ -244,19 +244,53 @@
     might not be relevant.
 
     So, although we could just read the data we just found (indicated via the blue box) and disassemble
-    it, it would only give us raw instructions with little less information.
+    it, it would only give us raw instructions with little less information. Another problem with this is that
+    it's easy to get lost among the instructions, since the compiler might mix data and instructions so that
+    the disassembler starts disassembling in the middle of instructions. Especially on x86.
   }
 \end{frame}
 
 \begin{frame}{Loading a binary, symbols}
   \includegraphics[width=8cm]{elf_symbols}
+  \note{
+    So in addition to the section data, we really want and need symbol information as well. At least for
+    this type of disassembler, where the focus is debugging and understanding the code, there's no way
+    around it. Symbols can be found in their own section, called the symbol table. It's shown on the
+    horizontal view, with a pointer to it from the section table.
+
+    Each symbol contains information about the symbol type, e.g., function, data object, or even a
+    section. For functions and data, it also has information about visibility, i.e., local to the
+    object file or globally visible. There's also a name, and a reference to the section the symbol
+    belongs to. This, together with the section offset tells us where the instructions for the
+    symbol resides, which is illustrated on the image.
+
+    There's also a size for the symbol, but this is actually optional and can't be relied upon.
+    Therefore, to get the chunks to disassemble, I simply order the symbols via a std::map, and
+    disassemble everything from one symbol to the next. The last is terminated by the section end.
+
+    So, with this, we're finally able to get the disassembled instructions.
+  }
 \end{frame}
 
 \begin{frame}{Loading a binary, instructions}
   \includegraphics[width=8cm]{elf_instructions}
 
 \note{
-The job description for an instruction set architect
+  So here, you see how three instructions are disassembled. The disassembly has been done by capstone,
+  which also provides some metadata about the instructions. In particular, it's used here to determine
+  which instructions are branches (or jumps), and where they jump to. That's used to generate the
+  "jump lanes" in the disassembly view.
+
+  Jumps and branches are typically local to the symbol, but calls to functions are not. They are
+  handled in mostly the same way, but the target address needs to be looked up from the symbol table.
+  Finally, capstone also has information about used registers, which the disassembler uses to highlight
+  registers in different colors in the disassembly view.
+
+  And by now, you'd think we would be done and ready for beer, but there's one more problem. There's
+  a call to printf here, and where's printf located? Let's say this is an object file, and printf
+  resides in another file or library, that the linker resolves.
+
+  The job description for an instruction set architect
 \begin{itemize}
   \item You should create an instruction set which consists of abbreviations of
   common words for no particular reason. Bonus point for using unclear meanings
@@ -273,10 +307,42 @@ The job description for an instruction set architect
 
 \begin{frame}{Loading a binary, relocations}
   \includegraphics[width=8cm]{elf_relocations}
+
+  \note{
+  So to resolve printf, a relocation entry has been added. The purpose of the relocation entry in this
+  case is for the linker to resolve it to to a correct address, and patch the instruction with the
+  resolved address. Depending on the architecture, there might be multiple relocations pointing to the
+  same target, for example with fixed-size instruction sets where a full address might not fit in one
+  instruction.
+
+  It's interesting to read the libbfd documentation about relocations by the way. It's quite informative,
+  but also a bit archaic. They use the Motorola 68000 instruction set for the first relocation example.
+  How many here have used the 68000? The next example is then the COFF format on the Motorola 88000,
+  which at least I haven't used.
+
+  Anyway, why is the disassembler interested in relocations? Well, in this case, the call instruction
+  doesn't really say anything, since the compiler doesn't know where printf is. With the relocation,
+  the disassembler can resolve the call to printf. But where does it end up?
+}
 \end{frame}
 
 \begin{frame}{Loading a binary, relocations}
   \includegraphics[width=8cm]{elf_undefined_section}
+  \note{
+  The final piece of the puzzle is then handled by a special section for undefined symbols. Here, the
+  relocation entry points to the printf symbol, which in it's symbol header has a reference to the
+  undefined section. For the disassembler, this is really only used to mark the symbol as gray in the
+  symbol view. For the instruction view, the relocation entry is enough to resolve the call to printf.
+
+  % Check if the section is actually present in an ELF file
+
+  Now, in a linked executabe, there are usually also undefined symbols and relocations, where shared
+  libraries are used. I will not go into that here, but there are some additional aspects to consider
+  there. One thing is that resolving for example each call to printf would be quite expensive, if it's
+  called in many places. Therefore, an indirection is often used, so that the call is done into the PLT
+  or Procedure Linking Table. Then, the relocation only needs to be done in the PLT, and this can also
+  be lazily, the first time a particular function is called.
+  }
 \end{frame}
 
 \begin{frame}{Part III: Why is this easier now than 10 years ago?}
