@@ -12,13 +12,6 @@
 \usetheme{Warsaw}
 \graphicspath{ {./images/}{../images/}{../kcov-swedencpp/images/}{../../kcov-swedencpp/images/}{output/} }
 
-\AtBeginSection[specialframe]
-{
-  \begin{frame}{Table of Contents}
-   \tableofcontents[currentsection]
-  \end{frame}
-}
-
 \title[What's in a binary?] %optional
 {What's in a binary?}
 
@@ -43,8 +36,6 @@
     emilpro, which is a graphical disassembler.
   }
 \end{frame}
-
-
 
 \begin{frame}{Background}
   \begin{itemize}
@@ -147,12 +138,28 @@
   \note{
   Using plain Objdump for this is very cumbersome, so I wanted an easier way to navigate the
   disassembly.
+
+  So in 2006, I wrote a small python application called Dissy. It was a simple graphical frontend
+  to objdump and nm, and simply parsed the text output from those tools. It was good enough for my
+  purposes, but it was too slow for larger binaries.
+
+  Around 2011-2012, I was working on the Linux kernel in my day job, which was impossible to use
+  with dissy. I therefore thought I'd rewrite it in C++, via libbfd instead of parsing objdump
+  output. The binutils libbfd, as in binary file descriptor, is the base of objdump anyway, so why not
+  use it directly?
+
+  That's the image on the right, and I called it EmilPRO as a pun on IDA pro. I got something working,
+  but for reasons I'll get back into, it bitrot and a few years ago it was impossible to even compile.
+  About a year ago, I stumbled upon another question to which the answer was disassembly (namely: How
+  can this short C++ snippet compile to 14KB!?), and I thought I'd try to revive it. It turned out to
+  be a more or less complete rewrite, and that's the topic of the rest of the talk.
 }
 \end{frame}
 
 \begin{frame}{Part II: What is needed for a disassembler?}
-\end{frame}
 
+  \includegraphics[width=7cm]{sq2_computer_room}
+\end{frame}
 
 \begin{frame}{Binary formats}
   \begin{itemize}
@@ -177,21 +184,7 @@
       The execption to the funniness is Windows, which simply calls their format pee.
 
       I believe MS-DOS uses the COFF format.
-
-      The job description for an instruction set architect
-      \begin{itemize}
-        \item You should create an instruction set which consists of abbreviations of
-        common words for no particular reason. Bonus point for using unclear meanings
-        (for example MOV, which is an abbreviation of "move", but actually copies the
-        value)
-        \item Your instruction set should be basically MIPS, but with a few improvements.
-        Sometimes "improvements".
-        \item Your instruction set should contain at least one funny sounding instruction.
-        Case in point: EIEIO.
-      \end{itemize}
     }
-
-    \includegraphics[width=7cm]{sq2_computer_room}
   \end{frame}
 
 
@@ -261,6 +254,21 @@
 
 \begin{frame}{Loading a binary, instructions}
   \includegraphics[width=8cm]{elf_instructions}
+
+\note{
+The job description for an instruction set architect
+\begin{itemize}
+  \item You should create an instruction set which consists of abbreviations of
+  common words for no particular reason. Bonus point for using unclear meanings
+  (for example MOV, which is an abbreviation of "move", but actually copies the
+  value)
+  \item Your instruction set should be basically MIPS, but with a few improvements.
+  Sometimes "improvements".
+  \item Your instruction set should contain at least one funny sounding instruction.
+  Case in point: EIEIO.
+\end{itemize}
+}
+
 \end{frame}
 
 \begin{frame}{Loading a binary, relocations}
@@ -271,27 +279,94 @@
   \includegraphics[width=8cm]{elf_undefined_section}
 \end{frame}
 
-\begin{frame}{Actors and objects}
-    Actors
-    \begin{itemize}
-      \item \textbf{Compiler}
-      \item \textbf{Linker}
-      \item \textbf{Loader}
-      \item \textbf{Disassembler}
-    \end{itemize}
-    Objects
-    \begin{itemize}
-      \item \textbf{Instructions}: The actual code
-      \item \textbf{Sections}: Text, data, debug info etc
-      \item \textbf{Symbols}: Functions/methods, variables, ...
-      \item \textbf{Relocations}: Call sites for later resolving
-    \end{itemize}
-    % What is compiler, linker, loader?
-    % Show in emilpro
-
-    % Sections, symbols, relocations
-    % Disassembler, compiler, linker, loader
+\begin{frame}{Part III: Why is this easier now than 10 years ago?}
+  %move from binutils
+  %c++11+
+  %conan
+  %copilot
 \end{frame}
+
+\begin{frame}{Bad design decisions in the original project}
+  \begin{itemize}
+    \item libbfd for disassembly: the multiarch-dev issue
+    \item feature creep: core functionality sketchy, work on irrelevant features
+  \end{itemize}
+
+  \includegraphics[width=8cm]{old_emilpro}
+
+  % built my own binutils. Bitrot and was unbuildable later
+\end{frame}
+
+\begin{frame}{C++20 and infrastructure}
+  \begin{itemize}
+    \item The previous implementation was done just around the C++11 introduction, but used C++03
+    \item Now C++23, so much better!
+    \item Conan and ASAN
+
+    % example of c++03 vs c++23
+
+    % binutils
+
+    % The main reason for my previous failure was the libbfd rebuild
+    % conan allows newer versions than in the distribution, and the same between os:es.
+    % maybe not so good for distributions though.
+
+    % Conan libiberty helps with MacOS libbfd linking.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{AI}
+  \begin{itemize}
+    \item I use Github copilot
+    \item Very helpful with Qt development
+  \end{itemize}
+  \includegraphics<2>[height=8cm]{copilot_calls_functions}
+  % Unit test example (drawing, ugly)
+  % LaTeX example (bad)
+  % Qt example (good)
+  %copilot
+
+\end{frame}
+
+
+
+\begin{frame}{Questions and comments!}
+  \includegraphics[width=\linewidth]{sq_final}
+
+  Images from \url{http://www.falselogic.net/LetsPlay/SpaceQuest.html}
+
+  Ian Lance Taylors linker series is the source of parts of this talk
+  \url{https://www.airs.com/blog/index.php?s=Linkers}
+
+  \note{
+  First I have a teaser for my next talk. Do we have any people living or working in
+  Uppsala here? Do you know that you live in the edge case?
+  }
+\end{frame}
+
+\begin{frame}{Actors and objects}
+  Actors
+  \begin{itemize}
+    \item \textbf{Compiler}
+    \item \textbf{Linker}
+    \item \textbf{Loader}
+    \item \textbf{Disassembler}
+  \end{itemize}
+  Objects
+  \begin{itemize}
+    \item \textbf{Instructions}: The actual code
+    \item \textbf{Sections}: Text, data, debug info etc
+    \item \textbf{Symbols}: Functions/methods, variables, ...
+    \item \textbf{Relocations}: Call sites for later resolving
+  \end{itemize}
+  % What is compiler, linker, loader?
+  % Show in emilpro
+
+  % Sections, symbols, relocations
+  % Disassembler, compiler, linker, loader
+\end{frame}
+
+
 
 \begin{frame}{Producing a binary}
   \begin{columns}
@@ -302,18 +377,7 @@
       \includegraphics[width=5cm]{compiler_linker}
     \end{column}
   \end{columns}
-  % Sumbol example from ELF (dump reloc)
-\end{frame}
-
-\begin{frame}{Relocations}
-  \begin{itemize}
-    \item If a non-local function is called, an undefined symbol is added
-    \item The compiler adds a relocation entry for the call site
-    \item When linking, the linker will resolve these symbols
-    \item Different types depending on instruction
-  \end{itemize}
-
-  % Example from ELF (dump reloc)
+  % Symbol example from ELF (dump reloc)
 \end{frame}
 
 \begin{frame}{Loading a binary}
@@ -352,6 +416,17 @@
     % Why are they needed?
 \end{frame}
 
+\begin{frame}{Relocations}
+  \begin{itemize}
+    \item If a non-local function is called, an undefined symbol is added
+    \item The compiler adds a relocation entry for the call site
+    \item When linking, the linker will resolve these symbols
+    \item Different types depending on instruction
+  \end{itemize}
+
+  % Example from ELF (dump reloc)
+\end{frame}
+
 \begin{frame}{libbfd}
     %Example from documentation
 
@@ -360,67 +435,5 @@
     }
   \end{frame}
 
-\begin{frame}{Part III: Why is this easier now than 10 years ago?}
-  %move from binutils
-  %c++11+
-  %conan
-  %copilot
-\end{frame}
-
-
-\begin{frame}{Bad design decisions in the original project}
-  \begin{itemize}
-    \item libbfd for disassembly: the multiarch-dev issue
-    \item feature creep: core functionality sketchy, work on irrelevant features
-  \end{itemize}
-
-  % built my own binutils. Bitrot and was unbuildable later
-\end{frame}
-
-\begin{frame}{C++20 and infrastructure}
-  \begin{itemize}
-    \item The previous implementation was done just around the C++11 introduction, but used C++03
-    \item Now C++23, so much better!
-    \item Conan and ASAN
-
-    % example of c++03 vs c++23
-
-    % binutils
-
-    % The main reason for my previous failure was the libbfd rebuild
-    % conan allows newer versions than in the distribution, and the same between os:es.
-    % maybe not so good for distributions though.
-
-    % Conan libiberty helps with MacOS libbfd linking.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{AI}
-  \begin{itemize}
-    \item I use Github copilot
-    \item Very helpful with Qt development
-  \end{itemize}
-  % Unit test example (drawing, ugly)
-  % LaTeX example (bad)
-  % Qt example (good)
-  %copilot
-
-\end{frame}
-
-
-
-\begin{frame}{Questions and comments!}
-  \includegraphics[width=\linewidth]{sq_final}
-
-  Images from \url{http://www.falselogic.net/LetsPlay/SpaceQuest.html}
-
-  Ian Lance Taylors linker series is the source of parts of this talk
-  \url{https://www.airs.com/blog/index.php?s=Linkers}
-
-  \note{
-  First I have a teaser for my next talk. Do we have any people living or working in
-  Uppsala here? Do you know that you live in the edge case?
-  }
-\end{frame}
 
 \end{document}
