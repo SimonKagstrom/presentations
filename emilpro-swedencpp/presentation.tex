@@ -354,11 +354,39 @@
 
 \begin{frame}{Bad design decisions in the original project}
   \begin{itemize}
-    \item libbfd for disassembly: the multiarch-dev issue
     \item feature creep: core functionality sketchy, work on irrelevant features
+    \item libbfd for disassembly: the multiarch-dev issue
   \end{itemize}
 
   \includegraphics[width=8cm]{old_emilpro}
+
+  \note{
+  The first mistake I did with the original project was the feature scope. I had lots of ideas, for example
+  being able to edit instructions, which would then be pushed to a web service to share with other users.
+  That was quite a bit of work, while at the same time core features like resizing the window didn't work
+  well.
+
+  Of course, I did this on my spare time, and basically did what I found interesting. Window resizing
+  and learning Qt creator wasn't something I really longed to do. But the end result was that the
+  project had features which were useless, while the usability of what you really wanted was so-so.
+
+  But the main reason I failed had to do with libbfd. There are actually two parts to this. The first
+  is that even though the documentation is quite good, there are parts of it which are rather difficult
+  to understand. In particular, this goes for relocations. Since I had recently worked with ELF
+  relocations in another project, I simply picked up the raw ELF relocation types from the section
+  file offset and used them. This made it ELF-only, and pretty much Linux-only.
+
+  The second is that I decided to use libbfd as a diassembler as well. This sort of makes sense, since
+  it's the C3PO of binary parsers and can handle 6 million forms of instruction sets. However, if you
+  want to disassemble something other than the host architecture, you'll need the multiarch build of it.
+  Unfortunately, the development package isn't for the multiarch build, so I resorted to build it by
+  myself as part of the build process, for a fixed binutils version.
+
+  Apart from prolonging the build time by an hour the first time, this also meant that a few years
+  ahead, it was impossible to build emilpro because of kernel and libc changes. So for the new
+  version, I swore to never use anything other than the distiribution package for libbfd, no self-
+  builds!
+  }
 
   % built my own binutils. Bitrot and was unbuildable later
 \end{frame}
@@ -391,6 +419,14 @@
   % LaTeX example (bad)
   % Qt example (good)
   %copilot
+
+  \note{
+    Show latex example.
+
+    But this is how it is with AI systems: You pass a question into a black box, wait for it to churnk
+    and then something comes out. What goes on inside is a mystery, maybe even to the creators.
+    It's almost like you'd want a disassembler.
+  }
 
 \end{frame}
 
