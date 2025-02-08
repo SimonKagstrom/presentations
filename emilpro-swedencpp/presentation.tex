@@ -289,18 +289,6 @@
   And by now, you'd think we would be done and ready for beer, but there's one more problem. There's
   a call to printf here, and where's printf located? Let's say this is an object file, and printf
   resides in another file or library, that the linker resolves.
-
-  The job description for an instruction set architect
-\begin{itemize}
-  \item You should create an instruction set which consists of abbreviations of
-  common words for no particular reason. Bonus point for using unclear meanings
-  (for example MOV, which is an abbreviation of "move", but actually copies the
-  value)
-  \item Your instruction set should be basically MIPS, but with a few improvements.
-  Sometimes "improvements".
-  \item Your instruction set should contain at least one funny sounding instruction.
-  Case in point: EIEIO.
-\end{itemize}
 }
 
 \end{frame}
@@ -468,6 +456,8 @@ cmake_layout
     Now, there have been many improvements to the C++ infrastructure since 2012, but one I've
     become very dependent on is the address sanitizer. I tend to always enable it for the debug
     builds and unit tests, and it's really nice to be able to catch leaks and overwrites early.
+
+    The final reason might be a bit controversial, namely
   }
 \end{frame}
 
@@ -482,9 +472,13 @@ cmake_layout
   % Qt example (good)
   %copilot
 
-  \note{
-    Show latex example.
+  \note<1>{
+    AI. I'm using github copilot via vscode.  I'll actually show you a few examples, starting with one
+    from the unit tests.
 
+    Copilot also tried to help me with the presentation.
+  }
+  \note<2>{
     But this is how it is with AI systems: You pass a question into a black box, wait for it to churnk
     and then something comes out. What goes on inside is a mystery, maybe even to the creators.
     It's almost like you'd want a disassembler.
