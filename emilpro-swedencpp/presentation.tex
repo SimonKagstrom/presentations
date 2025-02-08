@@ -81,6 +81,7 @@
   \end{frame}
 
 \begin{frame}{Part I: Motivation}
+  \includegraphics[width=8cm]{sq1_blues_brothers}
 \end{frame}
 
 \begin{frame}[fragile]{Motivation}
@@ -157,8 +158,7 @@
 \end{frame}
 
 \begin{frame}{Part II: What is needed for a disassembler?}
-
-  \includegraphics[width=7cm]{sq2_computer_room}
+  \includegraphics[width=8cm]{sq2_computer_room}
 \end{frame}
 
 \begin{frame}{Binary formats}
@@ -183,7 +183,7 @@
 
       The execption to the funniness is Windows, which simply calls their format pee.
 
-      I believe MS-DOS uses the COFF format.
+      For MS-DOS, there were multiple formats, COM, MZ and NE.
     }
   \end{frame}
 
@@ -354,13 +354,13 @@
 
 \begin{frame}{Bad design decisions in the original project}
   \begin{itemize}
-    \item feature creep: core functionality sketchy, work on irrelevant features
-    \item libbfd for disassembly: the multiarch-dev issue
+    \item<1-> feature creep: core functionality sketchy, work on irrelevant features
+    \item<2> libbfd for disassembly: the multiarch-dev issue
   \end{itemize}
 
   \includegraphics[width=8cm]{old_emilpro}
 
-  \note{
+  \note<1>{
   The first mistake I did with the original project was the feature scope. I had lots of ideas, for example
   being able to edit instructions, which would then be pushed to a web service to share with other users.
   That was quite a bit of work, while at the same time core features like resizing the window didn't work
@@ -369,7 +369,8 @@
   Of course, I did this on my spare time, and basically did what I found interesting. Window resizing
   and learning Qt creator wasn't something I really longed to do. But the end result was that the
   project had features which were useless, while the usability of what you really wanted was so-so.
-
+  }
+  \note<2>{
   But the main reason I failed had to do with libbfd. There are actually two parts to this. The first
   is that even though the documentation is quite good, there are parts of it which are rather difficult
   to understand. In particular, this goes for relocations. Since I had recently worked with ELF
@@ -391,22 +392,83 @@
   % built my own binutils. Bitrot and was unbuildable later
 \end{frame}
 
-\begin{frame}{C++20 and infrastructure}
+\begin{frame}[fragile]{C++20 and onwards}
   \begin{itemize}
     \item The previous implementation was done just around the C++11 introduction, but used C++03
     \item Now C++23, so much better!
-    \item Conan and ASAN
 
-    % example of c++03 vs c++23
-
-    % binutils
-
-    % The main reason for my previous failure was the libbfd rebuild
-    % conan allows newer versions than in the distribution, and the same between os:es.
-    % maybe not so good for distributions though.
-
-    % Conan libiberty helps with MacOS libbfd linking.
+    \begin{block}{C++03}
+      \begin{semiverbatim}
+        \scriptsize
+for (InstructionList\_t::const\_iterator it = instructions.begin();
+     it != instructions.end();
+     ++it) \{
+      \end{semiverbatim}
+    \end{block}
+    \begin{block}{C++23}
+      \begin{semiverbatim}
+        \scriptsize
+for (const auto& insn : m\_instructions)
+\{
+      \end{semiverbatim}
+    \end{block}
   \end{itemize}
+
+  \note{
+    I started the previous version in 2012, and at least I was just starting to learn C++11. Therefore,
+    it was mainly a C++03 project at the time. As probably all of you know, C++ is a completely different
+    language now.
+
+    So the new version uses C++23, and a lot of things are both much more compact, and also a lot simpler
+    to implement. Apart from saving typing with auto, I also use a lot of std::span, which is a nice
+    way to avoid exposing underlying data structures. Lambdas make some things much cleaner, such as
+    reacting to Qt signals.
+  }
+\end{frame}
+
+\begin{frame}[fragile]{C++ infrastructure}
+  \begin{itemize}
+    \item The conan package manager
+    \item The addres sanitizer
+
+    \begin{block}{Conan}
+      \begin{semiverbatim}
+        \scriptsize
+[requires]
+doctest/2.4.11
+trompeloeil/48
+fmt/11.0.2
+capstone/5.0.1
+etl/20.39.4
+libiberty/9.1.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
+      \end{semiverbatim}
+    \end{block}
+  \end{itemize}
+  \note{
+    The second area where things have improved is around the C++ infrastructure. As I said before,
+    I refused to build my own binutils in this version, but use the distribution package.
+    However, for other dependencies, I now in general use the conan package manager. It's a very
+    nice way to ensure consistent builds across different platforms, and sometimes to get newer
+    versions of libraries than the distribution has.
+
+    As I use MacOS these days, conan also helped me with a very special issue. The libbfd version
+    in Homebrew is actually incomplete, since it doesn't ship with libiberty, which is a GNU utility
+    library (think linking with minus liberty). I felt hopelessness for a while when I realized this,
+    since it would be quite difficult to build emilpro apart from on my own machine. However, I then
+    found out that libiberty actually exists as a conan package, so simply adding that resolved
+    this issue.
+
+    Now, there have been many improvements to the C++ infrastructure since 2012, but one I've
+    become very dependent on is the address sanitizer. I tend to always enable it for the debug
+    builds and unit tests, and it's really nice to be able to catch leaks and overwrites early.
+  }
 \end{frame}
 
 \begin{frame}{AI}
