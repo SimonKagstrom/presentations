@@ -104,9 +104,9 @@
     I've during my career, although mostly for non-work related tasks, multiple times had to rely on
     diassembly for debugging and understanding how things work while working on low-level stuff.
 
-    Back in the days, I was also writing a lot of inline assembly, and side effects of that is easy
-    to get almost correct, so that it breaks in subtle ways when more complex code is used. If you've
-    used GCC inline assembly, you'll know that it's quite powerful but it's very important to correctly
+    Back in the days, I was also writing a lot of inline assembly. If you've used inline assembly, you'll
+    know is easy to get almost correct, so that it breaks in subtle ways when more complex code is used.
+    Specifically, GCC inline assembly is quite powerful but it's very important to correctly
     specify input, output correct, as well as side-effects, which are known as clobbered. I had to
     look the word up by the way, and clobbered means "to hit someone or something hard and repeatedly".
     That summarizes GCC inline assembly well, I think!
@@ -146,6 +146,9 @@
 
 \begin{frame}{Part II: What is needed for a disassembler?}
   \includegraphics[width=8cm]{sq2_computer_room}
+  \note{
+    So we're already at the second part, where we'll discuss what the disassembler needs to know.
+  }
 \end{frame}
 
 \begin{frame}{Binary formats}
@@ -159,13 +162,13 @@
     % PE
     % The three rules for an instruction set architect
     \note{
-      The binary format is used for executables and linkable object files. These are the
-      three probably most commonly used formats today.
+      The binary format is used for executables, shared libraries and linkable object files. These
+      are the three probably most commonly used formats today.
 
       ELF is used for Linux, FreeBSD and others, but also as an intermediate format for a
       lot of embedded systems. MacOS uses the Mach-O format, from the Mach microkernel. You'll
       notice here that the binary format engineers have a sense of humor, and you also have
-      the DWARF debugging format to go with ELF and also Mach-O. If you invent a new format,
+      the DWARF debugging format to go with ELF and Mach-O. So if you invent a new format,
       I'd suggest ORC as a name.
 
       The execption to the funniness is Windows, which simply calls their format pee.
