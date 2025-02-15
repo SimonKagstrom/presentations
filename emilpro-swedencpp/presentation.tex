@@ -34,40 +34,23 @@
   \note{
     My name is Simon Kågström and I work as a consultant, currently at Profoto. Tonight I will present
     emilpro, which is a graphical disassembler.
-  }
-\end{frame}
 
-\begin{frame}{Background}
-  \begin{itemize}
-    \item I have a few themes that I often return to in my projects
-    \item One of these is disassembly
-  \end{itemize}
-  \note{
     I don't know about you, but at least I tend to return to a few themes over and over again.
     These projects are never finished, and rarely really working, but they are fun to work on.
 
     For some of these, I've done multiple reimplementations, and the topic of this talk is one
     of them. This is actually the third implementation, the first one was started almost 20 years ago
     now as a Python application called Dissy. You get a sense of how old I am now, I guess!
-
-    That one really just parsed objdump output, so after a few years I thought I could do better,
-    and rewrite it in C++ and use libraries for the parsing instead. So a bit over 10 years ago, I
-    rewrote it as "emilpro", which is a pun on IDA pro which at least then was the state of the art.
-
-    It was sort of working, but bitrotted and a few years later it wasn't even possible to compile
-    anymore. But when I again needed disassembly this year, I thought I'd just rewrite it again
-    and that's the topic of this talk. The third implementation now, and counting!
   }
 \end{frame}
 
-
 \begin{frame}
   \frametitle{Demo}
+
+  \includegraphics[width=\linewidth]{kalkyl}
   \note{
     I'll start with a small demo of the application.
   }
-
-  \includegraphics[width=\linewidth]{kalkyl}
   % Start the app. Show symbols, filtering, cross-reference, jump lanes, address history
 \end{frame}
 
@@ -82,6 +65,10 @@
 
 \begin{frame}{Part I: Motivation}
   \includegraphics[width=8cm]{sq1_blues_brothers}
+  \note{
+    I'll start with the motivation. Why bother with disassembly at all? And why write a
+    graphical disassembler?
+  }
 \end{frame}
 
 \begin{frame}[fragile]{Motivation}
@@ -194,9 +181,9 @@
       I did not write everything from scratch!
 
       \begin{itemize}
+        \item \textbf{Qt}: GUI framework
         \item \textbf{libbfd}: Part of binutils, used for reading binary files
         \item \textbf{capstone}: Disassembler library
-        \item \textbf{Qt}: GUI framework
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -210,8 +197,10 @@
     the apple."
 
     The three main building stones are Qt, the GUI framework, libbfd and capstone. libbfd reads binary files
-    to gather symbols, relocations and instruction data which the disassembler then picks up. The sectiond
+    to gather symbols, relocations and instruction data which the disassembler then picks up. The section
     data, for text sections are then fed to capstone, which disassembles it into instructions.
+
+    And now we've talked a lot about details already, so let's take a step back.
   }
 \end{frame}
 
@@ -334,6 +323,12 @@
 \end{frame}
 
 \begin{frame}{Part III: Why is this easier now than 10 years ago?}
+  \includegraphics[width=8cm]{sq_keypad}
+
+  \note{
+    And now the end is near, and we're at the final part. I'd like to spend a few minutes on
+    the software engineering aspects of all this.
+  }
   %move from binutils
   %c++11+
   %conan
@@ -463,8 +458,8 @@ cmake_layout
 
 \begin{frame}{AI}
   \begin{itemize}
-    \item I use Github copilot
-    \item Very helpful with Qt development
+    \item<1> I use Github copilot
+    \item<1> Very helpful with Qt development
   \end{itemize}
   \includegraphics<2>[height=8cm]{copilot_calls_functions}
   % Unit test example (drawing, ugly)
