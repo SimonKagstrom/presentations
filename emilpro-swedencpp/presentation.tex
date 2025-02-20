@@ -8,6 +8,7 @@
 \setbeameroption{show notes}
 \setbeamertemplate{note page}[plain]
 \setbeameroption{show notes on second screen=left}
+%\setbeameroption{show only notes}
 
 \usetheme{Warsaw}
 \graphicspath{ {./images/}{../images/}{../kcov-swedencpp/images/}{../../kcov-swedencpp/images/}{output/} }
@@ -309,7 +310,7 @@
 \begin{frame}{Loading a binary, relocations}
   \includegraphics[width=8cm]{elf_undefined_section}
   \note{
-  The final piece of the puzzle is then handled by a special section for undefined symbols. Here, the
+  The final piece of the puzzle is then handled by a special virtual section for undefined symbols. Here, the
   relocation entry points to the printf symbol, which in it's symbol header has a reference to the
   undefined section. For the disassembler, this is really only used to mark the symbol as gray in the
   symbol view. For the instruction view, the relocation entry is enough to resolve the call to printf.
