@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 
 \usepackage[utf8]{inputenc}
@@ -65,7 +65,7 @@
   \end{frame}
 
 \begin{frame}{Part I: Motivation}
-  \includegraphics[width=8cm]{sq1_blues_brothers}
+  \includegraphics[width=\linewidth]{sq1_blues_brothers}
   \note{
     I'll start with the motivation. Why bother with disassembly at all? And why write a
     graphical disassembler?
@@ -122,8 +122,8 @@
     \item Objdump output is cumbersome to navigate through
     \item I wanted a graphical application that allows easier navigation
   \end{itemize}
-  \includegraphics[width=4.5cm]{dissy-with-instruction-box-600}
-  \includegraphics[width=6cm]{old_emilpro}
+  \includegraphics[width=5.5cm]{dissy-with-instruction-box-600}
+  \includegraphics[width=7cm]{old_emilpro}
   \note{
   Using plain Objdump for this is very cumbersome, so I wanted an easier way to navigate the
   disassembly.
@@ -146,7 +146,7 @@
 \end{frame}
 
 \begin{frame}{Part II: What is needed for a disassembler?}
-  \includegraphics[width=8cm]{sq2_computer_room}
+  \includegraphics[width=\linewidth]{sq2_computer_room}
   \note{
     So we're already at the second part, where we'll discuss what the disassembler needs to know.
   }
@@ -209,7 +209,7 @@
 \end{frame}
 
 \begin{frame}{Loading a binary}
-  \includegraphics[width=8cm]{elf_background}
+  \includegraphics[width=10cm]{elf_background}
   \note{
     So let's say you have a file with the ELF magic. How do you go about to get the instructions 
     out of it? The vertical and horizontal views are both of the same file, but I use the vertical one
@@ -221,7 +221,7 @@
 \end{frame}
 
 \begin{frame}{Loading a binary, sections}
-  \includegraphics[width=8cm]{elf_sections}
+  \includegraphics[width=10cm]{elf_sections}
 
   \note{
     The sections are the basic building blocks of the ELF file, and similar concepts are also present for
@@ -244,7 +244,7 @@
 \end{frame}
 
 \begin{frame}{Loading a binary, symbols}
-  \includegraphics[width=8cm]{elf_symbols}
+  \includegraphics[width=10cm]{elf_symbols}
   \note{
     So in addition to the section data, we really want and need symbol information as well. At least for
     this type of disassembler, where the focus is debugging and understanding the code, there's no way
@@ -266,7 +266,7 @@
 \end{frame}
 
 \begin{frame}{Loading a binary, instructions}
-  \includegraphics[width=8cm]{elf_instructions}
+  \includegraphics[width=10cm]{elf_instructions}
 
 \note{
   So here, you see how three instructions are disassembled. The disassembly has been done by capstone,
@@ -287,7 +287,7 @@
 \end{frame}
 
 \begin{frame}{Loading a binary, relocations}
-  \includegraphics[width=8cm]{elf_relocations}
+  \includegraphics[width=10cm]{elf_relocations}
 
   \note{
   So to resolve printf, a relocation entry has been added. The purpose of the relocation entry in this
@@ -308,7 +308,7 @@
 \end{frame}
 
 \begin{frame}{Loading a binary, relocations}
-  \includegraphics[width=8cm]{elf_undefined_section}
+  \includegraphics[width=10cm]{elf_undefined_section}
   \note{
   The final piece of the puzzle is then handled by a special virtual section for undefined symbols. Here, the
   relocation entry points to the printf symbol, which in it's symbol header has a reference to the
@@ -327,7 +327,7 @@
 \end{frame}
 
 \begin{frame}{Part III: Why is this easier now than 10 years ago?}
-  \includegraphics[width=8cm]{sq_keypad}
+  \includegraphics[width=\linewidth]{sq_keypad}
 
   \note{
     And now the end is near, and we're at the final part. I'd like to spend a few minutes on
